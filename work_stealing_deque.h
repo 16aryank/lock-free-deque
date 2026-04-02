@@ -1,10 +1,13 @@
 #pragma once
 
 #include "circular_array.h"
-#include <memory.h>
+#include <memory>
 #include <atomic>
 #include <concepts>
 #include <optional>
+
+// Constant factor >= 3
+static inline constexpr unsigned int K = 4;
 
 enum class StealState {
     SUCCESS,
@@ -17,17 +20,16 @@ struct StealResult {
     StealState state_;
     std::optional<T> value_;
 
-    explicit StealResult(StealState state) : 
+    explicit StealResult<T>(StealState state) : 
         state_(state), value_(std::nullopt) {}
 
-    explicit StealResult(T value) :
-        state_(StealState.SUCCESS), value_(value) {}
+    explicit StealResult<T>(T value) :
+        state_(StealState::SUCCESS), value_(value) {}
 };
 
 template <class T>
 class WorkStealingDeque {
 public:
-
     explicit WorkStealingDeque(std::size_t log_initial_size = 10)
         : bottom_(0),
           top_(0),
@@ -35,37 +37,37 @@ public:
           active_array_(std::make_unique<CircularArray<T>>(log_initial_size)) {}
 
     void push_bottom(T x) {
-        unsigned long long b = bottom_.load(std::memory_order_relaxed);
-        unsigned long long t = local_top;
-        if (local_top_ == -1 || (b - local_top_ >= a->size() - 1)) {
+        std::int64_t b = bottom_.load(std::memory_order_relaxed);
+        std::int64_t t = local_top_;
+        auto* a = active_array_.get();
+        if (local_top_ == 0 || (b - local_top_ >= a->size() - 1)) {
             t = top_.load(std::memory_order_acquire);
         }
-        auto* a = active_array_.get();
 
-        unsigned long long size = b - t;
+        std::int64_t size = b - t;
         if (size >= a->size() - 1) {
-            auto new_array = a->grow(b, t);
-            active_array_ = std::move(new_array);
+            a->grow(b, t);
+            active_array_ = std::move(a);
             a = active_array_.get();
         }
 
-        a->put(b, std::move(x));
+        a->store(b, std::move(x));
         bottom_.store(b + 1, std::memory_order_release);
     }
 
-    StealResult steal() {
+    StealResult<T> steal() {
         auto t = top_.load(std::memory_order_acquire);
         auto b = bottom_.load(std::memory_order_acquire);
         auto* a = active_array_.get();
 
-        unsigned long long size = b - t;
+        std::int64_t size = b - t;
         if (size <= 0) {
-            return StealResult(StealState.EMPTY);
+            return StealResult<T>(StealState::EMPTY);
         }
 
-        T x = a->get(t);
+        T x = a->load(t);
         if (!cas_top(t, t + 1)) {
-            return StealResult(StealState.ABORT);
+            return StealResult<T>(StealState::ABORT);
         }
     
         return x;
@@ -84,8 +86,9 @@ public:
             return std::nullopt;
         }
 
-        T x = a->get(b);
+        T x = a->load(b);
         if (size > 0) {
+            perhaps_shrink(b, t);
             return x;
         }
 
@@ -99,7 +102,15 @@ public:
     }
 
 private:
-    bool cas_top(std::uint64_t expected, std::uint64_t desired) {
+    void perhaps_shrink(std::int64_t b, std::int64_t t) {
+        auto* a = active_array_.get();
+        if ((b - t) < (a->size() / K)) {
+            CircularArray aa = a->shrink(b, t);
+            active_array_ = aa;
+        }
+    }
+
+    bool cas_top(std::int64_t expected, std::int64_t desired) {
         return top_.compare_exchange_strong(
             expected,
             desired,
@@ -109,11 +120,12 @@ private:
     }
 
     inline bool is_empty() const noexcept {
-        return bottom_ <= top_;
+        return bottom_.load(std::memory_order_acquire) <=
+            top_.load(std::memory_order_acquire);       
     }
 
-    std::atomic<std::uint64_t> bottom_;
-    std::atomic<std::uint64_t> top_;
-    std::uint64_t local_top_;
     std::unique_ptr<CircularArray<T>> active_array_;
+    std::atomic<std::int64_t> bottom_;
+    std::atomic<std::int64_t> top_;
+    std::int64_t local_top_;
 };

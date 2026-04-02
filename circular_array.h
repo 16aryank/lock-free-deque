@@ -2,7 +2,7 @@
 
 #include <array>
 #include <cstdint>
-#include <memory.h>
+#include <memory>
 
 template <class T>
 class CircularArray {
@@ -15,26 +15,27 @@ public:
         return std::size_t{1} << log_size_;
     }
 
-    T get(std::uint64_t i) const {
+    T load(std::uint64_t i) const {
         return segment_[index(i)];
     }
 
-    void put(std::uint64_t i, const T& value) {
+    void store(std::uint64_t i, const T& value) {
         segment_[index(i)] = value;
     }
 
-    void put(std::uint64_t i, T&& value) {
+    void store(std::uint64_t i, T&& value) {
         segment_[index(i)] = std::move(value);
     }
 
-    std::unique_ptr<CircularArray<T>> grow(std::uint64_t b, std::uint64_t t) const {
+    void grow(std::uint64_t b, std::uint64_t t) const {
         auto new_array = std::make_unique<CircularArray<T>>(log_size_ + 1);
 
         // Values before t do not matter
         for (std::uint64_t i = t; i < b; i++) {
-            new_array->put(i, get(i)); 
+            new_array->put(i, load(i)); 
         }
-        return new_array;
+
+        this = std::move(new_array);
     }
 
 private:
