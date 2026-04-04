@@ -34,21 +34,22 @@ public:
         : bottom_(0),
           top_(0),
           local_top_(0),
-          active_array_(std::make_unique<CircularArray<T>>(log_initial_size)) {}
+          min_log_size_(log_initial_size),
+          active_array_(std::make_shared<CircularArray<T>>(log_initial_size)) {}
 
     void push_bottom(T x) {
         std::int64_t b = bottom_.load(std::memory_order_relaxed);
         std::int64_t t = local_top_;
-        auto* a = active_array_.get();
+        auto a = active_array_.load(std::memory_order_acquire);
         if (local_top_ == 0 || (b - local_top_ >= a->size() - 1)) {
             t = top_.load(std::memory_order_acquire);
         }
 
         std::int64_t size = b - t;
         if (size >= a->size() - 1) {
-            a->grow(b, t);
-            active_array_ = std::move(a);
-            a = active_array_.get();
+            auto new_array = a->grow(b, t);
+            active_array_.store(new_array, std::memory_order_release);
+            a = std::move(new_array);
         }
 
         a->store(b, std::move(x));
@@ -58,7 +59,7 @@ public:
     StealResult<T> steal() {
         auto t = top_.load(std::memory_order_acquire);
         auto b = bottom_.load(std::memory_order_acquire);
-        auto* a = active_array_.get();
+        auto a = active_array_.load(std::memory_order_acquire);
 
         std::int64_t size = b - t;
         if (size <= 0) {
@@ -75,7 +76,7 @@ public:
 
     std::optional<T> pop_bottom() {
         auto b = bottom_.load(std::memory_order_relaxed) - 1;
-        auto* a = active_array_.get();
+        auto a = active_array_.load(std::memory_order_acquire);
         bottom_.store(b, std::memory_order_relaxed);
 
         auto t = top_.load(std::memory_order_acquire);
@@ -103,10 +104,23 @@ public:
 
 private:
     void perhaps_shrink(std::int64_t b, std::int64_t t) {
-        auto* a = active_array_.get();
-        if ((b - t) < (a->size() / K)) {
-            CircularArray aa = a->shrink(b, t);
-            active_array_ = aa;
+        auto a = active_array_.load(std::memory_order_acquire);
+        auto cursor = a;
+        std::size_t num_shrink = 0;
+
+        while (cursor->log_size() > min_log_size_ &&
+               (b - t) < (cursor->size() / K)) {
+            auto prev = cursor->get_prev();
+            if (!prev) {
+                break;
+            }
+            cursor = std::move(prev);
+            num_shrink++;
+        }
+
+        if (num_shrink > 0) {
+            auto new_array = a->shrink(b, t, num_shrink);
+            active_array_.store(new_array, std::memory_order_release);
         }
     }
 
@@ -124,8 +138,9 @@ private:
             top_.load(std::memory_order_acquire);       
     }
 
-    std::unique_ptr<CircularArray<T>> active_array_;
+    std::atomic<std::shared_ptr<CircularArray<T>>> active_array_;
     std::atomic<std::int64_t> bottom_;
     std::atomic<std::int64_t> top_;
     std::int64_t local_top_;
+    std::size_t min_log_size_;
 };
