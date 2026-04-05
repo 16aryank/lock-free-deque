@@ -5,11 +5,16 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
-
+#include <mutex>
+#include <vector>
 
 template <class T>
 class CircularArray : public std::enable_shared_from_this<CircularArray<T>> {
 public:
+    static std::shared_ptr<CircularArray<T>> acquire(std::size_t log_size) {
+        return Pool::instance().acquire(log_size);
+    }
+
     explicit CircularArray(std::size_t log_size)
         : log_size_(log_size),
           segment_(std::make_unique<T[]>(std::size_t{1} << log_size)),
@@ -42,7 +47,7 @@ public:
     }
 
     std::shared_ptr<CircularArray<T>> grow(std::uint64_t b, std::uint64_t t) const {
-        auto new_array = std::make_shared<CircularArray<T>>(log_size_ + 1);
+        auto new_array = acquire(log_size_ + 1);
         new_array->prev_ = this->shared_from_this();
 
         // Values before t do not matter
@@ -62,7 +67,7 @@ public:
         auto cursor = this->shared_from_this();
         std::shared_ptr<CircularArray<T>> new_array;
 
-        for (std::size_t i = 0; i < num_shrink; ++i) {
+        for (std::size_t i = 0; i < num_shrink; i++) {
             auto next = cursor->prev_;
             if (!next) {
                 break;
@@ -73,7 +78,7 @@ public:
         }
 
         if (!new_array) {
-            new_array = std::make_shared<CircularArray<T>>(log_size_ - 1);
+            new_array = acquire(log_size_ - 1);
         }
 
         new_array->low_water_mark_ = std::min(new_array->low_water_mark_, min_low_water);
@@ -108,4 +113,60 @@ private:
     std::unique_ptr<T[]> segment_;
     std::uint64_t low_water_mark_;
     std::shared_ptr<CircularArray<T>> prev_;
+
+    struct Pool {
+        static Pool& instance() {
+            static Pool pool;
+            return pool;
+        }
+
+        std::shared_ptr<CircularArray<T>> acquire(std::size_t log_size) {
+            std::unique_ptr<CircularArray<T>> slot;
+            {
+                std::lock_guard<std::mutex> lock(mu_);
+                if (log_size >= free_lists_.size()) {
+                    free_lists_.resize(log_size + 1);
+                }
+                auto& list = free_lists_[log_size];
+                if (!list.empty()) {
+                    slot = std::move(list.back());
+                    list.pop_back();
+                }
+            }
+
+            if (!slot) {
+                slot = std::make_unique<CircularArray<T>>(log_size);
+            }
+
+            slot->reset_for_reuse();
+            auto* raw = slot.release();
+            return std::shared_ptr<CircularArray<T>>(raw, [](CircularArray<T>* p) {
+                Pool::instance().release(p);
+            });
+        }
+
+        void release(CircularArray<T>* array) {
+            if (!array) {
+                return;
+            }
+            std::unique_ptr<CircularArray<T>> slot(array);
+            array->reset_for_reuse();
+            const auto log_size = array->log_size();
+            {
+                std::lock_guard<std::mutex> lock(mu_);
+                if (log_size >= free_lists_.size()) {
+                    free_lists_.resize(log_size + 1);
+                }
+                free_lists_[log_size].push_back(std::move(slot));
+            }
+        }
+
+        std::mutex mu_;
+        std::vector<std::vector<std::unique_ptr<CircularArray<T>>>> free_lists_;
+    };
+
+    void reset_for_reuse() {
+        low_water_mark_ = std::numeric_limits<std::uint64_t>::max();
+        prev_.reset();
+    }
 };

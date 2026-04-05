@@ -35,7 +35,7 @@ public:
           top_(0),
           local_top_(0),
           min_log_size_(log_initial_size),
-          active_array_(std::make_shared<CircularArray<T>>(log_initial_size)) {}
+          active_array_(CircularArray<T>::acquire(log_initial_size)) {}
 
     void push_bottom(T x) {
         std::int64_t b = bottom_.load(std::memory_order_relaxed);
@@ -58,12 +58,22 @@ public:
 
     StealResult<T> steal() {
         auto t = top_.load(std::memory_order_acquire);
+        auto old_array = active_array_.load(std::memory_order_acquire);
         auto b = bottom_.load(std::memory_order_acquire);
         auto a = active_array_.load(std::memory_order_acquire);
 
         std::int64_t size = b - t;
         if (size <= 0) {
             return StealResult<T>(StealState::EMPTY);
+        }
+
+        auto modulus = size % static_cast<std::int64_t>(a->size());
+        if (modulus == 0) {
+            auto top_snapshot = top_.load(std::memory_order_acquire);
+            if (a == old_array && t == top_snapshot) {
+                return StealResult<T>(StealState::EMPTY);
+            }
+            return StealResult<T>(StealState::ABORT);
         }
 
         T x = a->load(t);
@@ -114,13 +124,22 @@ private:
             if (!prev) {
                 break;
             }
+            // Don't want to increase the ref count
             cursor = std::move(prev);
             num_shrink++;
         }
 
-        if (num_shrink > 0) {
-            auto new_array = a->shrink(b, t, num_shrink);
-            active_array_.store(new_array, std::memory_order_release);
+        if (num_shrink == 0) {
+            return;
+        }
+
+        auto new_array = a->shrink(b, t, num_shrink);
+        active_array_.store(new_array, std::memory_order_release);
+        auto ss = static_cast<std::int64_t>(new_array->size());
+        bottom_.store(b + ss, std::memory_order_relaxed);
+        auto top_snapshot = top_.load(std::memory_order_acquire);
+        if (!cas_top(top_snapshot, top_snapshot + ss)) {
+            bottom_.store(b, std::memory_order_relaxed);
         }
     }
 
