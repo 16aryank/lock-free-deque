@@ -4,6 +4,7 @@
 #include <memory>
 #include <atomic>
 #include <concepts>
+#include <utility>
 #include <optional>
 
 // Constant factor >= 3
@@ -28,6 +29,7 @@ struct StealResult {
 };
 
 template <class T>
+requires std::move_constructible<T>
 class WorkStealingDeque {
 public:
     explicit WorkStealingDeque(std::size_t log_initial_size = 10)

@@ -2,10 +2,12 @@
 
 #include <array>
 #include <algorithm>
+#include <atomic>
 #include <cstdint>
 #include <limits>
+#include "treiber_stack.h"
+
 #include <memory>
-#include <mutex>
 #include <vector>
 
 template <class T>
@@ -113,6 +115,7 @@ private:
     std::unique_ptr<T[]> segment_;
     std::uint64_t low_water_mark_;
     std::shared_ptr<CircularArray<T>> prev_;
+    std::atomic<CircularArray<T>*> pool_next_{nullptr};
 
     struct Pool {
         static Pool& instance() {
@@ -121,25 +124,12 @@ private:
         }
 
         std::shared_ptr<CircularArray<T>> acquire(std::size_t log_size) {
-            std::unique_ptr<CircularArray<T>> slot;
-            {
-                std::lock_guard<std::mutex> lock(mu_);
-                if (log_size >= free_lists_.size()) {
-                    free_lists_.resize(log_size + 1);
-                }
-                auto& list = free_lists_[log_size];
-                if (!list.empty()) {
-                    slot = std::move(list.back());
-                    list.pop_back();
-                }
+            auto* raw = pop(log_size);
+            if (!raw) {
+                raw = new CircularArray<T>(log_size);
             }
 
-            if (!slot) {
-                slot = std::make_unique<CircularArray<T>>(log_size);
-            }
-
-            slot->reset_for_reuse();
-            auto* raw = slot.release();
+            raw->reset_for_reuse();
             return std::shared_ptr<CircularArray<T>>(raw, [](CircularArray<T>* p) {
                 Pool::instance().release(p);
             });
@@ -149,24 +139,36 @@ private:
             if (!array) {
                 return;
             }
-            std::unique_ptr<CircularArray<T>> slot(array);
             array->reset_for_reuse();
             const auto log_size = array->log_size();
-            {
-                std::lock_guard<std::mutex> lock(mu_);
-                if (log_size >= free_lists_.size()) {
-                    free_lists_.resize(log_size + 1);
-                }
-                free_lists_[log_size].push_back(std::move(slot));
-            }
+            stack_for(log_size).push(array);
         }
 
-        std::mutex mu_;
-        std::vector<std::vector<std::unique_ptr<CircularArray<T>>>> free_lists_;
+        CircularArray<T>* pop(std::size_t log_size) {
+            if (log_size >= free_lists_.size()) {
+                return nullptr;
+            }
+            return stack_for(log_size).pop();
+        }
+
+        TreiberStack<CircularArray<T>>& stack_for(std::size_t log_size) {
+            if (log_size >= free_lists_.size()) {
+                free_lists_.resize(log_size + 1);
+            }
+            if (!free_lists_[log_size]) {
+                free_lists_[log_size] = std::make_unique<TreiberStack<CircularArray<T>>>();
+            }
+            return *free_lists_[log_size];
+        }
+
+        std::vector<std::unique_ptr<TreiberStack<CircularArray<T>>>> free_lists_;
     };
 
     void reset_for_reuse() {
         low_water_mark_ = std::numeric_limits<std::uint64_t>::max();
         prev_.reset();
+        pool_next_.store(nullptr, std::memory_order_relaxed);
     }
+
+    friend class TreiberStack<CircularArray<T>>;
 };
