@@ -11,6 +11,9 @@ public:
     TreiberStack(const TreiberStack&) = delete;
     TreiberStack& operator=(const TreiberStack&) = delete;
 
+    // Node needs at least 1 tag bit
+    static_assert(alignof(Node) >= 2);
+
     void push(Node* node) {
         auto head = head_.load(std::memory_order_relaxed);
         do {

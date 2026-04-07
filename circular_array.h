@@ -5,14 +5,14 @@
 #include <atomic>
 #include <cstdint>
 #include <limits>
-#include "treiber_stack.h"
-
 #include <memory>
 #include <vector>
+#include "treiber_stack.h"
 
 template <class T>
 class CircularArray : public std::enable_shared_from_this<CircularArray<T>> {
 public:
+    // Acquire a buffer of size 2^log_size from the shared pool
     static std::shared_ptr<CircularArray<T>> acquire(std::size_t log_size) {
         return Pool::instance().acquire(log_size);
     }
@@ -69,12 +69,14 @@ public:
         auto cursor = this->shared_from_this();
         std::shared_ptr<CircularArray<T>> new_array;
 
+        // Shrink multiple arrays at once
         for (std::size_t i = 0; i < num_shrink; i++) {
             auto next = cursor->prev_;
             if (!next) {
                 break;
             }
             min_low_water = std::min(min_low_water, next->low_water_mark_);
+            // Don't want to increase ref count
             cursor = std::move(next);
             new_array = cursor;
         }
@@ -123,6 +125,7 @@ private:
             return pool;
         }
 
+        // Acquire a new CircularArray from the Triber Stack, allocates one if necessary 
         std::shared_ptr<CircularArray<T>> acquire(std::size_t log_size) {
             auto* raw = pop(log_size);
             if (!raw) {
@@ -130,11 +133,14 @@ private:
             }
 
             raw->reset_for_reuse();
+
+            // Create a shared pointer with the lambda function as the deleter
             return std::shared_ptr<CircularArray<T>>(raw, [](CircularArray<T>* p) {
                 Pool::instance().release(p);
             });
         }
 
+        // Push the array back into the free list
         void release(CircularArray<T>* array) {
             if (!array) {
                 return;
@@ -144,6 +150,7 @@ private:
             stack_for(log_size).push(array);
         }
 
+        // Returns the topmost element of the Treiber Stack for the given log size
         CircularArray<T>* pop(std::size_t log_size) {
             if (log_size >= free_lists_.size()) {
                 return nullptr;
@@ -151,6 +158,7 @@ private:
             return stack_for(log_size).pop();
         }
 
+        // Returns the Treiber Stack for the given log size
         TreiberStack<CircularArray<T>>& stack_for(std::size_t log_size) {
             if (log_size >= free_lists_.size()) {
                 free_lists_.resize(log_size + 1);
@@ -164,9 +172,10 @@ private:
         std::vector<std::unique_ptr<TreiberStack<CircularArray<T>>>> free_lists_;
     };
 
+    // Reset data members when array is no longer needed
     void reset_for_reuse() {
         low_water_mark_ = std::numeric_limits<std::uint64_t>::max();
-        prev_.reset();
+        prev_.reset(); // Decrements reference count
         pool_next_.store(nullptr, std::memory_order_relaxed);
     }
 
