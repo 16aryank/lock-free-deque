@@ -50,7 +50,8 @@ public:
 
     std::shared_ptr<CircularArray<T>> grow(std::uint64_t b, std::uint64_t t) const {
         auto new_array = acquire(log_size_ + 1);
-        new_array->prev_ = this->shared_from_this();
+        auto self = const_cast<CircularArray<T>*>(this)->shared_from_this();
+        new_array->prev_ = std::move(self);
 
         // Values before t do not matter
         for (std::uint64_t i = t; i < b; i++) {
@@ -62,11 +63,11 @@ public:
 
     std::shared_ptr<CircularArray<T>> shrink(std::uint64_t b, std::uint64_t t, std::size_t num_shrink) const {
         if (log_size_ == 0) {
-            return this->shared_from_this();
+            return const_cast<CircularArray<T>*>(this)->shared_from_this();
         }
 
         std::uint64_t min_low_water = low_water_mark_;
-        auto cursor = this->shared_from_this();
+        auto cursor = const_cast<CircularArray<T>*>(this)->shared_from_this();
         std::shared_ptr<CircularArray<T>> new_array;
 
         // Shrink multiple arrays at once

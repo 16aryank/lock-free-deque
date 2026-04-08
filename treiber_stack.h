@@ -36,7 +36,6 @@ public:
             Node* next = head_ptr->pool_next_.load(std::memory_order_relaxed);
             if (head_.compare_exchange_weak(
                     head,
-                    next,
                     pack(next, next_tag(head)),
                     std::memory_order_acq_rel,
                     std::memory_order_acquire)) {
