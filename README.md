@@ -1,5 +1,5 @@
 # Lock Free Work-Stealing Deque
-An implementation of a Chase-Lev Dynamic Circular Work-Stealing Deque. The implementation is based on [this](https://www.dre.vanderbilt.edu/~schmidt/PDF/work-stealing-dequeue.pdf) paper.
+An implementation of a Chase-Lev Dynamic Circular Work-Stealing Deque. The implementation is based on [this](https://www.dre.vanderbilt.edu/~schmidt/PDF/work-stealing-dequeue.pdf) paper and is written in C++20.
 
 ## Overview
 
