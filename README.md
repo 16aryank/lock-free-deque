@@ -12,6 +12,7 @@ make benchmark-tsan TSAN_ARGS="100000 4"
 make test-tsan                                 # existing tests with TSAN
 ```
 
+Implementation headers live in `src/`; unit tests and benchmarks live in `test/`.
 Executables and TSAN debug-symbol bundles are generated in `build/`; `make clean`
 removes that directory.
 
@@ -45,7 +46,7 @@ Below the underlying data structures for the deque are described.
 
 ## Circular Array
 
-The implementation of the array is stored in `circular_array.h`. The array has five private data members: the log of its size, `log_size_`; a unique pointer to the underlying array of variables, `segment_`; a low water mark, `low_water_mark_`; a shared pointer to the previous circular array, `prev_`; and an atomic pointer to the next pool, `pool_next_`.
+The implementation of the array is stored in `src/circular_array.h`. The array has five private data members: the log of its size, `log_size_`; a unique pointer to the underlying array of variables, `segment_`; a low water mark, `low_water_mark_`; a shared pointer to the previous circular array, `prev_`; and an atomic pointer to the next pool, `pool_next_`.
 
 `segment_` owns a `std::atomic<T>[]` array. All slot reads and writes, including
 growth and shrink copies, use relaxed atomic operations; deque publication and
