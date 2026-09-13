@@ -28,8 +28,7 @@ struct StealResult {
         state_(StealState::SUCCESS), value_(value) {}
 };
 
-template <class T>
-requires std::move_constructible<T>
+template <LockFreeAtomicValue T>
 class WorkStealingDeque {
 public:
     explicit WorkStealingDeque(std::size_t log_initial_size = 10)

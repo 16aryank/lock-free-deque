@@ -1,7 +1,39 @@
 # Lock Free Work-Stealing Deque
 An implementation of a Chase-Lev Dynamic Circular Work-Stealing Deque. The implementation is based on [this](https://www.dre.vanderbilt.edu/~schmidt/PDF/work-stealing-dequeue.pdf) paper and is written in C++20.
 
-## Overview
+## Building and benchmarking
+
+```sh
+make test                                      # GoogleTest suite
+make benchmark                                 # optimized benchmark, 100,000 items
+make benchmark BENCH_ARGS="1000000 4"           # items and maximum thief count
+make benchmark-tsan                            # TSAN benchmark, 10,000 items
+make benchmark-tsan TSAN_ARGS="100000 4"
+make test-tsan                                 # existing tests with TSAN
+```
+
+Executables and TSAN debug-symbol bundles are generated in `build/`; `make clean`
+removes that directory.
+
+The standalone benchmark needs no GoogleTest dependency. It measures owner-only
+push/pop pairs, thieves draining a prefilled deque, an owner pushing while thieves
+steal, and burst pushes/pops competing with thieves (including resizing). Thief
+counts increase from one by powers of two, ending at the requested maximum.
+Only one thread accesses the bottom of each deque.
+
+Output includes consumed items/second, deque calls/second (including failed
+attempts), elapsed nanoseconds/item, owner/stolen counts, and abort/empty counts.
+Prefilling, thread creation, and exact-once validation are excluded from timing;
+per-thread result recording, retries, and worker completion are included. Each
+scenario checks for missing, duplicate, and out-of-range items after timing and
+returns a failing exit status on errors or a 30-second cooperative timeout.
+These are whole-workload throughput measurements, not individual call latency.
+Run several times on an otherwise idle machine to assess timing variability.
+
+Optimized (`-O3`) and TSAN (`-O1 -g -fsanitize=thread`) binaries are separate;
+use optimized results for speed comparisons. TSAN targets stop on the first race. A passing item check or TSAN run does not prove correctness of the whole algorithm.
+
+## Implementation overview
 
 The general algorithm is described in the above paper. The deque follows the paper exactly. I implemented this for the following reasons:
 
@@ -14,6 +46,17 @@ Below the underlying data structures for the deque are described.
 ## Circular Array
 
 The implementation of the array is stored in `circular_array.h`. The array has five private data members: the log of its size, `log_size_`; a unique pointer to the underlying array of variables, `segment_`; a low water mark, `low_water_mark_`; a shared pointer to the previous circular array, `prev_`; and an atomic pointer to the next pool, `pool_next_`.
+
+`segment_` owns a `std::atomic<T>[]` array. All slot reads and writes, including
+growth and shrink copies, use relaxed atomic operations; deque publication and
+ownership ordering are handled separately by the indices. Both `CircularArray<T>`
+and `WorkStealingDeque<T>` require `LockFreeAtomicValue<T>`: an unqualified,
+trivially copyable type satisfying the copy/move requirements of `std::atomic<T>`,
+with `std::atomic<T>::is_always_lock_free` true on the target platform. Integers
+and task pointers are typical choices; large structs and nontrivial objects are
+rejected. As before, allocating the array also requires default construction of
+the value type. Lock-free slots alone do not guarantee that every deque operation
+is lock-free.
 
 The low-water mark is used as an optimization while shrinking. The previous, smaller array will still contain a lot of the same valid data, so you will only need to copy over the delta of elements that were added while the bigger array was active. As Chase and Lev describe:
 
