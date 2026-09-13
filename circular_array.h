@@ -6,10 +6,24 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <type_traits>
 #include <vector>
 #include "treiber_stack.h"
 
+
+// is_always_lock_free rejects types that are 
+// too large to fit in std::atomic without internal locking
 template <class T>
+concept LockFreeAtomicValue =
+    std::is_trivially_copyable_v<T> &&
+    std::is_same_v<T, std::remove_cv_t<T>> &&
+    std::is_copy_constructible_v<T> &&
+    std::is_move_constructible_v<T> &&
+    std::is_copy_assignable_v<T> &&
+    std::is_move_assignable_v<T> &&
+    std::atomic<T>::is_always_lock_free;
+
+template <LockFreeAtomicValue T>
 class CircularArray : public std::enable_shared_from_this<CircularArray<T>> {
 public:
     // Acquire a buffer of size 2^log_size from the shared pool
@@ -19,7 +33,7 @@ public:
 
     explicit CircularArray(std::size_t log_size)
         : log_size_(log_size),
-          segment_(std::make_unique<T[]>(std::size_t{1} << log_size)),
+          segment_(std::make_unique<std::atomic<T>[]>(std::size_t{1} << log_size)),
           low_water_mark_(std::numeric_limits<std::uint64_t>::max()) {}
 
     std::size_t size() const noexcept {
@@ -35,16 +49,16 @@ public:
     }
 
     T load(std::uint64_t i) const {
-        return segment_[index(i)];
+        return segment_[index(i)].load(std::memory_order_relaxed);
     }
 
     void store(std::uint64_t i, const T& value) {
-        segment_[index(i)] = value;
+        segment_[index(i)].store(value, std::memory_order_relaxed);
         update_low_water_mark(i);
     }
 
     void store(std::uint64_t i, T&& value) {
-        segment_[index(i)] = std::move(value);
+        segment_[index(i)].store(value, std::memory_order_relaxed);
         update_low_water_mark(i);
     }
 
@@ -111,11 +125,11 @@ private:
     }
 
     void store_no_mark(std::uint64_t i, const T& value) {
-        segment_[index(i)] = value;
+        segment_[index(i)].store(value, std::memory_order_relaxed);
     }
 
     std::size_t log_size_;
-    std::unique_ptr<T[]> segment_;
+    std::unique_ptr<std::atomic<T>[]> segment_;
     std::uint64_t low_water_mark_;
     std::shared_ptr<CircularArray<T>> prev_;
     std::atomic<CircularArray<T>*> pool_next_{nullptr};

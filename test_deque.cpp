@@ -6,8 +6,38 @@
 #include <atomic>
 #include <deque>
 #include <thread>
+#include <string>
 
 namespace {
+
+struct LargeValue {
+    char bytes[1024];
+};
+
+struct MoveOnlyValue {
+    int value;
+    MoveOnlyValue() = default;
+    MoveOnlyValue(const MoveOnlyValue&) = delete;
+    MoveOnlyValue(MoveOnlyValue&&) = default;
+    MoveOnlyValue& operator=(const MoveOnlyValue&) = delete;
+    MoveOnlyValue& operator=(MoveOnlyValue&&) = default;
+};
+
+template <class T>
+concept SupportedDequeValue = requires {
+    typename CircularArray<T>;
+    typename WorkStealingDeque<T>;
+};
+
+static_assert(SupportedDequeValue<int>);
+static_assert(SupportedDequeValue<int*>);
+static_assert(!SupportedDequeValue<LargeValue>);
+static_assert(!SupportedDequeValue<std::string>);
+static_assert(!SupportedDequeValue<MoveOnlyValue>);
+static_assert(!SupportedDequeValue<const int>);
+static_assert(!SupportedDequeValue<volatile int>);
+static_assert(!SupportedDequeValue<int&>);
+static_assert(!SupportedDequeValue<void>);
 
 constexpr std::size_t kDefaultLogSize = 4;
 
