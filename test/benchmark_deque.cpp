@@ -1,4 +1,5 @@
 #include "work_stealing_deque.h"
+#include "mutex/work_stealing_deque.h"
 
 #include <algorithm>
 #include <barrier>
@@ -21,10 +22,16 @@ struct Stats {
     std::size_t empty = 0;
 };
 
+struct Result {
+    bool valid;
+    double seconds;
+};
+
 // Only the calling thread owns the bottom. Each thief has private statistics;
 // validation happens after timing, without adding per-item atomic counters.
-bool run(const std::string& mode, std::size_t items, unsigned thieves) {
-    WorkStealingDeque<std::size_t> deque(4);
+template <class Deque>
+Result run(const char* implementation, const std::string& mode, std::size_t items, unsigned thieves) {
+    Deque deque(4);
     std::vector<Stats> stats(thieves + 1);
     for (auto& s : stats) s.values.reserve(items);
     const bool prefilled = mode == "prefilled";
@@ -122,7 +129,8 @@ bool run(const std::string& mode, std::size_t items, unsigned thieves) {
     }
     const auto missing = std::count(seen.begin(), seen.end(), 0);
     const bool valid = !timed_out.load() && !missing && !duplicates && !invalid;
-    std::cout << std::left << std::setw(11) << mode << " thieves=" << thieves
+    std::cout << std::left << std::setw(10) << implementation
+              << std::setw(11) << mode << " thieves=" << thieves
               << std::fixed << std::setprecision(3)
               << " seconds=" << seconds
               << " Mitems/s=" << consumed / seconds / 1e6
@@ -134,6 +142,43 @@ bool run(const std::string& mode, std::size_t items, unsigned thieves) {
               << " missing=" << missing << " duplicate=" << duplicates
               << " invalid=" << invalid << " timeout=" << timed_out.load()
               << " " << (valid ? "PASS" : "FAIL") << std::endl;
+    return {valid, seconds};
+}
+
+bool compare(const std::string& mode, std::size_t items, unsigned thieves, unsigned repetitions) {
+    std::vector<double> lock_free_times, mutex_times;
+    bool valid = true;
+    for (unsigned trial = 0; trial < repetitions; ++trial) {
+        Result lock_free, mutex;
+        // Alternate execution order to reduce systematic order bias.
+        auto run_lock_free = [&] {
+            lock_free = run<WorkStealingDeque<std::size_t>>("lock-free", mode, items, thieves);
+        };
+        auto run_mutex = [&] {
+            mutex = run<mutex_deque::WorkStealingDeque<std::size_t>>("mutex", mode, items, thieves);
+        };
+        if (trial % 2 == 0) { run_lock_free(); run_mutex(); }
+        else { run_mutex(); run_lock_free(); }
+        valid = valid && lock_free.valid && mutex.valid;
+        lock_free_times.push_back(lock_free.seconds);
+        mutex_times.push_back(mutex.seconds);
+    }
+    auto median = [](std::vector<double>& times) {
+        std::sort(times.begin(), times.end());
+        return (times[(times.size() - 1) / 2] + times[times.size() / 2]) / 2;
+    };
+    std::cout << "comparison " << mode << " thieves=" << thieves
+              << " repetitions=" << repetitions;
+    if (valid) {
+        const auto lf_seconds = median(lock_free_times);
+        const auto mutex_seconds = median(mutex_times);
+        std::cout << " lock-free_Mitems/s=" << items / lf_seconds / 1e6
+                  << " mutex_Mitems/s=" << items / mutex_seconds / 1e6
+                  << " speedup=" << mutex_seconds / lf_seconds << "x";
+    } else {
+        std::cout << " speedup=N/A (validation failed)";
+    }
+    std::cout << std::endl;
     return valid;
 }
 } // namespace
@@ -141,6 +186,9 @@ bool run(const std::string& mode, std::size_t items, unsigned thieves) {
 int main(int argc, char** argv) {
     std::size_t items = 100000;
     unsigned max_thieves = std::min(4u, std::max(1u, std::thread::hardware_concurrency()));
+    unsigned repetitions = 3;
+    std::string implementation = "both";
+    std::string workload = "all";
     try {
         auto parse = [](const char* arg, unsigned long long limit) {
             const std::string text(arg);
@@ -150,21 +198,44 @@ int main(int argc, char** argv) {
             if (!value || value > limit) throw std::invalid_argument("out of range");
             return value;
         };
-        if (argc > 3) throw std::invalid_argument("too many arguments");
+        if (argc > 6) throw std::invalid_argument("too many arguments");
         if (argc > 1) items = parse(argv[1], 10000000);
         if (argc > 2) max_thieves = static_cast<unsigned>(parse(argv[2], 64));
+        if (argc > 3) repetitions = static_cast<unsigned>(parse(argv[3], 100));
+        if (argc > 4) implementation = argv[4];
+        if (argc > 5) workload = argv[5];
+        if (implementation != "both" && implementation != "lock-free" && implementation != "mutex")
+            throw std::invalid_argument("unknown implementation");
+        if (workload != "all" && workload != "owner" && workload != "prefilled" &&
+            workload != "streaming" && workload != "mixed")
+            throw std::invalid_argument("unknown workload");
     } catch (const std::exception& e) {
-        std::cerr << "Usage: " << argv[0] << " [items:1..10000000] [max_thieves:1..64]\n"
+        std::cerr << "Usage: " << argv[0] << " [items:1..10000000] [max_thieves:1..64] [repetitions:1..100]"
+                  << " [both|lock-free|mutex] [all|owner|prefilled|streaming|mixed]\n"
                   << e.what() << '\n';
         return EXIT_FAILURE;
     }
 
     std::cout << "items=" << items << " hardware_threads=" << std::thread::hardware_concurrency()
               << " (timings include bookkeeping and worker completion)\n";
-    bool passed = run("owner", items, 0);
+    auto execute = [&](const std::string& mode, unsigned thieves) {
+        if (implementation == "both") return compare(mode, items, thieves, repetitions);
+        bool valid = true;
+        for (unsigned trial = 0; trial < repetitions; ++trial) {
+            const auto result = implementation == "lock-free"
+                ? run<WorkStealingDeque<std::size_t>>("lock-free", mode, items, thieves)
+                : run<mutex_deque::WorkStealingDeque<std::size_t>>("mutex", mode, items, thieves);
+            valid = result.valid && valid;
+        }
+        return valid;
+    };
+    // A selected workload uses exactly max_thieves, making profiles easy to isolate.
+    if (workload != "all")
+        return execute(workload, workload == "owner" ? 0 : max_thieves) ? EXIT_SUCCESS : EXIT_FAILURE;
+    bool passed = execute("owner", 0);
     for (unsigned n = 1;; n = std::min(max_thieves, n * 2)) {
         for (const auto* mode : {"prefilled", "streaming", "mixed"})
-            passed = run(mode, items, n) && passed;
+            passed = execute(mode, n) && passed;
         if (n == max_thieves) break;
     }
     return passed ? EXIT_SUCCESS : EXIT_FAILURE;

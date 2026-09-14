@@ -6,10 +6,12 @@ An implementation of a Chase-Lev Dynamic Circular Work-Stealing Deque. The imple
 ```sh
 make test                                      # GoogleTest suite
 make benchmark                                 # optimized benchmark, 100,000 items
-make benchmark BENCH_ARGS="1000000 4"           # items and maximum thief count
+make benchmark BENCH_ARGS="1000000 4 3"         # items, maximum thieves, repetitions
 make benchmark-tsan                            # TSAN benchmark, 10,000 items
 make benchmark-tsan TSAN_ARGS="100000 4"
 make test-tsan                                 # existing tests with TSAN
+make benchmark-profile                         # Samply: original deque, streaming, 4 thieves
+samply load build/profile.json.gz              # open the recorded profile
 ```
 
 Implementation headers live in `src/`; unit tests and benchmarks live in `test/`.
@@ -21,6 +23,41 @@ push/pop pairs, thieves draining a prefilled deque, an owner pushing while thiev
 steal, and burst pushes/pops competing with thieves (including resizing). Thief
 counts increase from one by powers of two, ending at the requested maximum.
 Only one thread accesses the bottom of each deque.
+
+Every workload runs both the original deque and
+`mutex_deque::WorkStealingDeque<T>` from `src/mutex/work_stealing_deque.h`.
+The baseline protects a plain circular buffer with one `std::mutex`, covering
+each complete push, pop, or steal. It doubles when full (leaving one slot unused)
+and shrinks on owner pops below quarter capacity, down to its initial size.
+Steals wait for the mutex and return success or empty; they do not return abort.
+It allocates replacement buffers on resize instead of using the original's shared
+buffer pool, so this compares complete implementations, not just synchronization
+primitives.
+
+The optional third argument sets repetitions (default 3). Execution order
+alternates between implementations. Each `comparison` line reports throughput
+from median elapsed times and `speedup = mutex_time / lock_free_time`: values
+above 1 mean the original deque is faster; values below 1 mean the mutex baseline
+is faster. Speedup is omitted if any repetition fails validation. Both versions
+use identical item counts, initial capacities, owner workloads, thief counts,
+and validation, although scheduling affects the division of work and retry counts.
+
+Optional fourth and fifth benchmark arguments select an implementation
+(`both`, `lock-free`, or `mutex`) and workload (`all`, `owner`, `prefilled`,
+`streaming`, or `mixed`). Defaults preserve the full comparison suite. Selecting
+one workload uses exactly the requested thief count (zero for `owner`). For example:
+
+```sh
+make benchmark BENCH_ARGS="1000000 4 3 lock-free streaming"
+make benchmark-profile PROFILE_ARGS="10000000 4 5 lock-free prefilled" PROFILE_OUTPUT=build/prefilled.json.gz
+```
+
+The profiling target requires Samply and builds a separate optimized binary with
+debug symbols and frame pointers. It saves the profile and a symbol sidecar in
+`build/`. Profiling includes setup and validation outside the timed workload;
+inspect worker stacks to isolate stealing. On macOS, the original deque's atomic
+shared-pointer loads use libc++ internal mutexes, so the `lock-free` benchmark
+label does not imply that the complete implementation is lock-free.
 
 Output includes consumed items/second, deque calls/second (including failed
 attempts), elapsed nanoseconds/item, owner/stolen counts, and abort/empty counts.
