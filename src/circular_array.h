@@ -24,6 +24,9 @@ concept LockFreeAtomicValue =
     std::atomic<T>::is_always_lock_free;
 
 template <LockFreeAtomicValue T>
+class BufferPool;
+
+template <LockFreeAtomicValue T>
 class CircularArray : public std::enable_shared_from_this<CircularArray<T>> {
 public:
     // Acquire a buffer of size 2^log_size from the shared pool
@@ -195,4 +198,5 @@ private:
     }
 
     friend class TreiberStack<CircularArray<T>>;
+    friend class BufferPool<T>;
 };
