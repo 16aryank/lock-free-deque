@@ -3,8 +3,10 @@
 #undef private
 
 #include <gtest/gtest.h>
+#include <array>
 #include <atomic>
 #include <deque>
+#include <optional>
 #include <thread>
 #include <string>
 #include <type_traits>
@@ -104,11 +106,13 @@ TEST(WorkStealingDequeTest, StressAroundGrowShrinkThresholds) {
     std::deque<int> model;
 
     const int iterations = 2000;
+    int next_value = 0;
     for (int i = 0; i < iterations; ++i) {
-        // Grow to near full.
-        while (model.size() < 15) {
-            ASSERT_EQ(deque.try_push_bottom(i), PushResult::SUCCESS);
-            model.push_back(i);
+        // Cross the growth threshold on every cycle, then shrink again.
+        while (model.size() < 20) {
+            const int value = next_value++;
+            ASSERT_EQ(deque.try_push_bottom(value), PushResult::SUCCESS);
+            model.push_back(value);
         }
 
         // Pop down below shrink threshold (size < N/K).
@@ -139,24 +143,35 @@ TEST(WorkStealingDequeTest, MultiShrinkSkipsIntermediateArrays) {
         ASSERT_EQ(deque.try_push_bottom(i), PushResult::SUCCESS);
     }
 
-    auto* before = deque.active_array_.load(std::memory_order_seq_cst);
-    auto before_log = before->log_size();
-    ASSERT_GE(before_log, 4u);
-
-    // Pop until size is tiny to trigger multi-shrink.
-    while (true) {
-        auto v = deque.pop_bottom();
-        if (!v.has_value()) {
-            break;
-        }
-        auto* cur = deque.active_array_.load(std::memory_order_seq_cst);
-        if (cur->log_size() + 1 < before_log) {
-            break;
-        }
+    std::array<CircularArray<int>*, 9> by_log{};
+    for (auto* cursor = deque.active_array_.load(); cursor; cursor = cursor->get_prev()) {
+        by_log[cursor->log_size()] = cursor;
     }
+    ASSERT_NE(by_log[8], nullptr);
 
-    auto* after = deque.active_array_.load(std::memory_order_seq_cst);
-    EXPECT_LE(after->log_size() + 1, before_log);
+    // Thieves drain the deque without owner pops, leaving one owner pop to
+    // shrink across every retained intermediate array in one operation.
+    for (int i = 0; i < 198; ++i) {
+        auto stolen = deque.steal();
+        ASSERT_EQ(stolen.state_, StealState::SUCCESS);
+        ASSERT_TRUE(stolen.value_.has_value());
+        EXPECT_EQ(*stolen.value_, i);
+    }
+    auto popped = deque.pop_bottom();
+    ASSERT_TRUE(popped.has_value());
+    EXPECT_EQ(*popped, 199);
+    EXPECT_EQ(deque.active_array_.load(), by_log[2]);
+    EXPECT_EQ(pool.try_acquire(2), nullptr);
+
+    for (std::size_t log_size = 3; log_size <= 8; ++log_size) {
+        auto* released = pool.try_acquire(log_size);
+        ASSERT_EQ(released, by_log[log_size]);
+        EXPECT_EQ(pool.try_acquire(log_size), nullptr);
+        pool.release(released);
+    }
+    popped = deque.pop_bottom();
+    ASSERT_TRUE(popped.has_value());
+    EXPECT_EQ(*popped, 198);
 }
 
 TEST(WorkStealingDequeTest, PoolReusesBuffersAcrossDeques) {
@@ -174,33 +189,43 @@ TEST(WorkStealingDequeTest, PoolReusesBuffersAcrossDeques) {
     EXPECT_EQ(reused, freed);
 }
 
-TEST(WorkStealingDequeTest, RetainedRawPointerChainsReturnAtShutdown) {
+TEST(WorkStealingDequeTest, DiscardedBufferIsReusableBeforeOriginalDequeShutdown) {
     BufferPool<int> pool({{2, 1}, {3, 1}, {4, 1}, {5, 1}});
+    std::optional<WorkStealingDeque<int>> reused;
+    CircularArray<int>* discarded = nullptr;
     {
         WorkStealingDeque<int> deque(pool, 2);
         for (int i = 0; i < 20; ++i) {
             ASSERT_EQ(deque.try_push_bottom(i), PushResult::SUCCESS);
         }
-        EXPECT_EQ(deque.active_array_.load()->log_size(), 5u);
+        discarded = deque.active_array_.load();
+        ASSERT_EQ(discarded->log_size(), 5u);
 
-        for (int i = 19; i >= 0; --i) {
+        for (int i = 19; i > 0; --i) {
             auto value = deque.pop_bottom();
             ASSERT_TRUE(value.has_value());
             EXPECT_EQ(*value, i);
         }
-        EXPECT_NE(deque.retired_, nullptr);
-        for (std::size_t log_size = 2; log_size <= 5; ++log_size) {
-            EXPECT_EQ(pool.try_acquire(log_size), nullptr);
-        }
+        EXPECT_EQ(deque.active_array_.load()->log_size(), 2u);
+        reused.emplace(pool, 5);
+        EXPECT_EQ(reused->active_array_.load(), discarded);
+        EXPECT_EQ(pool.try_acquire(5), nullptr);
+
+        auto remaining = deque.pop_bottom();
+        ASSERT_TRUE(remaining.has_value());
+        EXPECT_EQ(*remaining, 0);
     }
 
-    for (std::size_t log_size = 2; log_size <= 5; ++log_size) {
-        auto* buffer = pool.try_acquire(log_size);
-        ASSERT_NE(buffer, nullptr);
-        EXPECT_EQ(buffer->log_size(), log_size);
-        EXPECT_EQ(buffer->get_prev(), nullptr);
-        pool.release(buffer);
-    }
+    // Destroying the first deque must not return a buffer now owned by reused.
+    EXPECT_EQ(pool.try_acquire(5), nullptr);
+    ASSERT_EQ(reused->try_push_bottom(42), PushResult::SUCCESS);
+    auto value = reused->pop_bottom();
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(*value, 42);
+    reused.reset();
+    auto* available = pool.try_acquire(5);
+    ASSERT_EQ(available, discarded);
+    pool.release(available);
 }
 
 TEST(WorkStealingDequeTest, MissingInitialBufferFailsDuringSetup) {

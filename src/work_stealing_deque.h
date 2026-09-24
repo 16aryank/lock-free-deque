@@ -34,7 +34,6 @@ public:
     ~WorkStealingDeque() {
         // Workers must be stopped before the deque or its pool is destroyed.
         release_chain(active_array_.load(std::memory_order_seq_cst));
-        release_chain(retired_);
     }
 
     WorkStealingDeque(const WorkStealingDeque&) = delete;
@@ -157,14 +156,15 @@ private:
             bottom_.store(b, std::memory_order_seq_cst);
         }
 
-        // Step 4 will publish these buffers to the pool here. Until then,
-        // keep them owned without allocating during shrink.
-        auto* last = a;
-        while (last->prev_ != new_array) {
-            last = last->prev_;
+        // The top CAS (or failure-path bottom restoration) invalidates stale
+        // claims before these buffers become available to other deques.
+        auto* discarded = a;
+        while (discarded != new_array) {
+            auto* next = discarded->prev_;
+            discarded->prev_ = nullptr;
+            pool_.release(discarded);
+            discarded = next;
         }
-        last->prev_ = retired_;
-        retired_ = a;
     }
 
     bool cas_top(std::int64_t expected, std::int64_t desired) {
@@ -181,7 +181,6 @@ private:
 
     BufferPool<T>& pool_;
     std::atomic<CircularArray<T>*> active_array_;
-    CircularArray<T>* retired_ = nullptr;
     std::atomic<std::int64_t> bottom_;
     std::atomic<std::int64_t> top_;
     std::int64_t local_top_;
