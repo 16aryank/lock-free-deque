@@ -6,7 +6,7 @@ BENCH_ARGS ?= 100000 4
 TSAN_ARGS ?= 10000 4
 PROFILE_ARGS ?= 10000000 4 5 lock-free streaming
 PROFILE_OUTPUT ?= build/profile.json.gz
-HEADERS = src/work_stealing_deque.h src/circular_array.h src/buffer_pool.h src/steal_result.h src/mutex/work_stealing_deque.h
+HEADERS = src/work_stealing_deque.h src/circular_array.h src/atomic_utils.h src/buffer_pool.h src/steal_result.h src/mutex/work_stealing_deque.h
 TEST_SOURCES = test/test_deque.cpp test/test_buffer_pool.cpp test/test_mutex_deque.cpp
 .PHONY: make clean benchmark benchmark-tsan benchmark-profile test test-tsan
 

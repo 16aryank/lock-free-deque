@@ -11,6 +11,11 @@
 // Constant factor >= 3
 static inline constexpr unsigned int K = 4;
 
+enum class PushResult {
+    SUCCESS,
+    NO_BUFFER_ACQUIRED,
+};
+
 template <LockFreeAtomicValue T>
 class WorkStealingDeque {
 public:
@@ -34,8 +39,8 @@ public:
 
     WorkStealingDeque(const WorkStealingDeque&) = delete;
     WorkStealingDeque& operator=(const WorkStealingDeque&) = delete;
-          
-    void push_bottom(T x) {
+
+    PushResult try_push_bottom(T x) {
         std::int64_t b = bottom_.load(std::memory_order_seq_cst);
         std::int64_t t = local_top_;
         auto* a = active_array_.load(std::memory_order_seq_cst);
@@ -47,9 +52,7 @@ public:
         if (size >= a->size() - 1) {
             auto* destination = pool_.try_acquire(a->log_size() + 1);
             if (!destination) {
-                // Step 3 replaces this temporary legacy failure path with
-                // a nonallocating resource result.
-                throw std::bad_alloc{};
+                return PushResult::NO_BUFFER_ACQUIRED;
             }
             a = a->grow_into(destination, b, t);
             active_array_.store(a, std::memory_order_seq_cst);
@@ -57,6 +60,7 @@ public:
 
         a->store(b, std::move(x));
         bottom_.store(b + 1, std::memory_order_seq_cst);
+        return PushResult::SUCCESS;
     }
 
     StealResult<T> steal() {

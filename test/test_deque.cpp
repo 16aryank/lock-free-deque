@@ -55,7 +55,7 @@ TEST(WorkStealingDequeTest, StealReturnsEmptySuccessAndAbort) {
     EXPECT_EQ(empty.state_, StealState::EMPTY);
 
     // Success case.
-    deque.push_bottom(42);
+    ASSERT_EQ(deque.try_push_bottom(42), PushResult::SUCCESS);
     auto success = deque.steal();
     EXPECT_EQ(success.state_, StealState::SUCCESS);
     ASSERT_TRUE(success.value_.has_value());
@@ -67,7 +67,7 @@ TEST(WorkStealingDequeTest, StealReturnsEmptySuccessAndAbort) {
     constexpr int kAttempts = 10000;
     for (int i = 0; i < kAttempts && !saw_abort; ++i) {
         WorkStealingDeque<int> d(pool, 2);
-        d.push_bottom(i);
+        ASSERT_EQ(d.try_push_bottom(i), PushResult::SUCCESS);
 
         std::atomic<int> ready{0};
         StealResult<int> r1(StealState::EMPTY);
@@ -107,7 +107,7 @@ TEST(WorkStealingDequeTest, StressAroundGrowShrinkThresholds) {
     for (int i = 0; i < iterations; ++i) {
         // Grow to near full.
         while (model.size() < 15) {
-            deque.push_bottom(i);
+            ASSERT_EQ(deque.try_push_bottom(i), PushResult::SUCCESS);
             model.push_back(i);
         }
 
@@ -136,7 +136,7 @@ TEST(WorkStealingDequeTest, MultiShrinkSkipsIntermediateArrays) {
 
     // Force multiple grows.
     for (int i = 0; i < 200; ++i) {
-        deque.push_bottom(i);
+        ASSERT_EQ(deque.try_push_bottom(i), PushResult::SUCCESS);
     }
 
     auto* before = deque.active_array_.load(std::memory_order_seq_cst);
@@ -179,7 +179,7 @@ TEST(WorkStealingDequeTest, RetainedRawPointerChainsReturnAtShutdown) {
     {
         WorkStealingDeque<int> deque(pool, 2);
         for (int i = 0; i < 20; ++i) {
-            deque.push_bottom(i);
+            ASSERT_EQ(deque.try_push_bottom(i), PushResult::SUCCESS);
         }
         EXPECT_EQ(deque.active_array_.load()->log_size(), 5u);
 
@@ -215,10 +215,16 @@ TEST(WorkStealingDequeTest, MissingGrowthBufferLeavesQueuedWorkIntact) {
     BufferPool<int> pool({{2, 1}});
     WorkStealingDeque<int> deque(pool, 2);
     for (int value = 0; value < 3; ++value) {
-        deque.push_bottom(value);
+        ASSERT_EQ(deque.try_push_bottom(value), PushResult::SUCCESS);
     }
 
-    EXPECT_THROW(deque.push_bottom(3), std::bad_alloc);
+    auto* before_array = deque.active_array_.load();
+    const auto before_bottom = deque.bottom_.load();
+    const auto before_top = deque.top_.load();
+    EXPECT_EQ(deque.try_push_bottom(3), PushResult::NO_BUFFER_ACQUIRED);
+    EXPECT_EQ(deque.active_array_.load(), before_array);
+    EXPECT_EQ(deque.bottom_.load(), before_bottom);
+    EXPECT_EQ(deque.top_.load(), before_top);
     EXPECT_EQ(deque.active_array_.load()->log_size(), 2u);
     for (int value = 2; value >= 0; --value) {
         auto popped = deque.pop_bottom();
@@ -226,6 +232,28 @@ TEST(WorkStealingDequeTest, MissingGrowthBufferLeavesQueuedWorkIntact) {
         EXPECT_EQ(*popped, value);
     }
     EXPECT_FALSE(deque.pop_bottom().has_value());
+}
+
+TEST(WorkStealingDequeTest, GrowthCanRetryAfterAnotherDequeReturnsBuffer) {
+    BufferPool<int> pool({{2, 1}, {3, 1}});
+    WorkStealingDeque<int> deque(pool, 2);
+    for (int value = 0; value < 3; ++value) {
+        ASSERT_EQ(deque.try_push_bottom(value), PushResult::SUCCESS);
+    }
+
+    {
+        WorkStealingDeque<int> holder(pool, 3);
+        EXPECT_EQ(deque.try_push_bottom(3), PushResult::NO_BUFFER_ACQUIRED);
+        EXPECT_EQ(deque.active_array_.load()->log_size(), 2u);
+    }
+
+    ASSERT_EQ(deque.try_push_bottom(3), PushResult::SUCCESS);
+    EXPECT_EQ(deque.active_array_.load()->log_size(), 3u);
+    for (int value = 3; value >= 0; --value) {
+        auto popped = deque.pop_bottom();
+        ASSERT_TRUE(popped.has_value());
+        EXPECT_EQ(*popped, value);
+    }
 }
 
 } // namespace
