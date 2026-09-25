@@ -259,6 +259,24 @@ TEST(WorkStealingDequeTest, MissingGrowthBufferLeavesQueuedWorkIntact) {
     EXPECT_FALSE(deque.pop_bottom().has_value());
 }
 
+TEST(WorkStealingDequeTest, StealMakesRoomWithoutGrowth) {
+    BufferPool<int> pool({{2, 1}});
+    WorkStealingDeque<int> deque(pool, 2);
+    for (int value = 0; value < 3; ++value) {
+        ASSERT_EQ(deque.try_push_bottom(value), PushResult::SUCCESS);
+    }
+
+    auto stolen = deque.steal();
+    ASSERT_EQ(stolen.state_, StealState::SUCCESS);
+    EXPECT_EQ(stolen.value_, 0);
+    EXPECT_EQ(deque.try_push_bottom(3), PushResult::SUCCESS);
+    EXPECT_EQ(deque.active_array_.load()->log_size(), 2u);
+    for (int value : {3, 2, 1}) {
+        EXPECT_EQ(deque.pop_bottom(), value);
+    }
+    EXPECT_FALSE(deque.pop_bottom().has_value());
+}
+
 TEST(WorkStealingDequeTest, GrowthCanRetryAfterAnotherDequeReturnsBuffer) {
     BufferPool<int> pool({{2, 1}, {3, 1}});
     WorkStealingDeque<int> deque(pool, 2);

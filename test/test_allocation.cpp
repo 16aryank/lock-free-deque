@@ -12,12 +12,15 @@ thread_local std::size_t allocation_count = 0;
 }
 
 // Replacing global new counts allocations made inside deque operations.
-// The default new[] forwards to this function, so array allocations count too.
 void* operator new(std::size_t size) {
     if (count_allocations) ++allocation_count;
     if (void* memory = std::malloc(size == 0 ? 1 : size)) return memory;
     throw std::bad_alloc{};
 }
+
+// Forward array new explicitly: sanitizer runtimes can bypass the default
+// forwarding path and otherwise leave array allocations out of this count.
+void* operator new[](std::size_t size) { return ::operator new(size); }
 
 // New allocates with malloc, so delete needs to call free
 void operator delete(void* memory) noexcept { std::free(memory); }
