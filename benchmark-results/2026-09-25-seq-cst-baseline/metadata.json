@@ -1,0 +1,37 @@
+{
+  "recorded_utc": "2026-09-25T19:51:07.345866+00:00",
+  "git_commit": "b73b3c33937c686085d56c7f7085f6dfb6d496a0",
+  "git_status": "M README.md\n?? benchmarks/",
+  "platform": "macOS-15.7.9-arm64-arm-64bit",
+  "logical_cpus": 10,
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "build_target": "make build/benchmark_deque",
+  "command": "./build/benchmark_deque ITEMS THIEVES compare",
+  "items": 3000000,
+  "thief_counts": [
+    0,
+    1,
+    2,
+    4,
+    8
+  ],
+  "warmups_per_count": 2,
+  "measured_trials_per_count": 10,
+  "comparison_order": [
+    "lock-free",
+    "mutex"
+  ],
+  "timing": "Owner pushes while thieves steal; owner drains after join. Worker setup and validation are outside the timer.",
+  "sha256": {
+    "test/benchmark_deque.cpp": "aedbe72f903fc706a654ca91310da53b4206d00146428d602f2d0c0c5f0aebf4",
+    "src/work_stealing_deque.h": "ab18cc5f87506dce68de4bc9b429e68ad9ea9b6f0d95004e6293b1c42d19b338",
+    "src/circular_array.h": "2238555b5183f205ce0532cd858f6e3032bdb8498f84f5f34a912cdff3635c1c",
+    "src/atomic_utils.h": "75ecea29726d84b8b93f64972cf673761e83a7da49aa1434cb1f705016914fe7",
+    "src/buffer_pool.h": "649d3ed6fec9848f20aeef2b310ee670949bf7902c291f4f72b4e0d50c27f616",
+    "src/steal_result.h": "e7963a8d66a4bf282d29cdb85805f4656a49e2a2599d4d70af9869cafb15e13d",
+    "src/mutex/work_stealing_deque.h": "5f27176e0970e9544fc0588ae8b47d496a75daaafa35baef8abfdfca3e7df9ec",
+    "Makefile": "e0c611facbbfe2a8784a48f2a6f37243eff5315669c0746bd495fe98a6185340",
+    "benchmarks/record_comparison.py": "deeca547ade71865c01bec4f816a4654dc6f5165e498b28adab6bffdcaf3a6f0",
+    "build/benchmark_deque": "6a5d2365c7be6e88d9a75e5058c02ed6f9585c1a595783899585863937a7934d"
+  }
+}

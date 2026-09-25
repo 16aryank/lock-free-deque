@@ -1,0 +1,300 @@
+thieves=0 warmup=1
+items=3000000 thieves=0
+lock-free seconds=0.022129 Mitems/s=135.57 owner=3000000 stolen=0 PASS
+mutex seconds=0.042816 Mitems/s=70.07 owner=3000000 stolen=0 PASS
+mutex/lock-free time=1.93x
+thieves=0 warmup=2
+items=3000000 thieves=0
+lock-free seconds=0.015525 Mitems/s=193.24 owner=3000000 stolen=0 PASS
+mutex seconds=0.037809 Mitems/s=79.35 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.44x
+thieves=0 trial=1
+items=3000000 thieves=0
+lock-free seconds=0.015830 Mitems/s=189.51 owner=3000000 stolen=0 PASS
+mutex seconds=0.038783 Mitems/s=77.35 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.45x
+thieves=0 trial=2
+items=3000000 thieves=0
+lock-free seconds=0.015666 Mitems/s=191.50 owner=3000000 stolen=0 PASS
+mutex seconds=0.039574 Mitems/s=75.81 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.53x
+thieves=0 trial=3
+items=3000000 thieves=0
+lock-free seconds=0.016447 Mitems/s=182.41 owner=3000000 stolen=0 PASS
+mutex seconds=0.038357 Mitems/s=78.21 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.33x
+thieves=0 trial=4
+items=3000000 thieves=0
+lock-free seconds=0.015430 Mitems/s=194.43 owner=3000000 stolen=0 PASS
+mutex seconds=0.038701 Mitems/s=77.52 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.51x
+thieves=0 trial=5
+items=3000000 thieves=0
+lock-free seconds=0.016241 Mitems/s=184.72 owner=3000000 stolen=0 PASS
+mutex seconds=0.042297 Mitems/s=70.93 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.60x
+thieves=0 trial=6
+items=3000000 thieves=0
+lock-free seconds=0.015550 Mitems/s=192.93 owner=3000000 stolen=0 PASS
+mutex seconds=0.048410 Mitems/s=61.97 owner=3000000 stolen=0 PASS
+mutex/lock-free time=3.11x
+thieves=0 trial=7
+items=3000000 thieves=0
+lock-free seconds=0.015682 Mitems/s=191.30 owner=3000000 stolen=0 PASS
+mutex seconds=0.039009 Mitems/s=76.91 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.49x
+thieves=0 trial=8
+items=3000000 thieves=0
+lock-free seconds=0.015910 Mitems/s=188.56 owner=3000000 stolen=0 PASS
+mutex seconds=0.038852 Mitems/s=77.22 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.44x
+thieves=0 trial=9
+items=3000000 thieves=0
+lock-free seconds=0.015480 Mitems/s=193.79 owner=3000000 stolen=0 PASS
+mutex seconds=0.038719 Mitems/s=77.48 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.50x
+thieves=0 trial=10
+items=3000000 thieves=0
+lock-free seconds=0.015428 Mitems/s=194.46 owner=3000000 stolen=0 PASS
+mutex seconds=0.037677 Mitems/s=79.62 owner=3000000 stolen=0 PASS
+mutex/lock-free time=2.44x
+thieves=1 warmup=1
+items=3000000 thieves=1
+lock-free seconds=0.129770 Mitems/s=23.12 owner=0 stolen=3000000 PASS
+mutex seconds=0.047565 Mitems/s=63.07 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.37x
+thieves=1 warmup=2
+items=3000000 thieves=1
+lock-free seconds=0.124248 Mitems/s=24.15 owner=0 stolen=3000000 PASS
+mutex seconds=0.058348 Mitems/s=51.42 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.47x
+thieves=1 trial=1
+items=3000000 thieves=1
+lock-free seconds=0.132527 Mitems/s=22.64 owner=0 stolen=3000000 PASS
+mutex seconds=0.052068 Mitems/s=57.62 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.39x
+thieves=1 trial=2
+items=3000000 thieves=1
+lock-free seconds=0.129373 Mitems/s=23.19 owner=0 stolen=3000000 PASS
+mutex seconds=0.050936 Mitems/s=58.90 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.39x
+thieves=1 trial=3
+items=3000000 thieves=1
+lock-free seconds=0.129990 Mitems/s=23.08 owner=0 stolen=3000000 PASS
+mutex seconds=0.060197 Mitems/s=49.84 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.46x
+thieves=1 trial=4
+items=3000000 thieves=1
+lock-free seconds=0.126530 Mitems/s=23.71 owner=0 stolen=3000000 PASS
+mutex seconds=0.051621 Mitems/s=58.12 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.41x
+thieves=1 trial=5
+items=3000000 thieves=1
+lock-free seconds=0.132061 Mitems/s=22.72 owner=0 stolen=3000000 PASS
+mutex seconds=0.050651 Mitems/s=59.23 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.38x
+thieves=1 trial=6
+items=3000000 thieves=1
+lock-free seconds=0.133045 Mitems/s=22.55 owner=0 stolen=3000000 PASS
+mutex seconds=0.054905 Mitems/s=54.64 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.41x
+thieves=1 trial=7
+items=3000000 thieves=1
+lock-free seconds=0.130176 Mitems/s=23.05 owner=0 stolen=3000000 PASS
+mutex seconds=0.051724 Mitems/s=58.00 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.40x
+thieves=1 trial=8
+items=3000000 thieves=1
+lock-free seconds=0.134565 Mitems/s=22.29 owner=0 stolen=3000000 PASS
+mutex seconds=0.047124 Mitems/s=63.66 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.35x
+thieves=1 trial=9
+items=3000000 thieves=1
+lock-free seconds=0.121867 Mitems/s=24.62 owner=0 stolen=3000000 PASS
+mutex seconds=0.050792 Mitems/s=59.06 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.42x
+thieves=1 trial=10
+items=3000000 thieves=1
+lock-free seconds=0.122239 Mitems/s=24.54 owner=0 stolen=3000000 PASS
+mutex seconds=0.051420 Mitems/s=58.34 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.42x
+thieves=2 warmup=1
+items=3000000 thieves=2
+lock-free seconds=0.190377 Mitems/s=15.76 owner=0 stolen=3000000 PASS
+mutex seconds=0.289489 Mitems/s=10.36 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.52x
+thieves=2 warmup=2
+items=3000000 thieves=2
+lock-free seconds=0.192919 Mitems/s=15.55 owner=0 stolen=3000000 PASS
+mutex seconds=0.267250 Mitems/s=11.23 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.39x
+thieves=2 trial=1
+items=3000000 thieves=2
+lock-free seconds=0.204960 Mitems/s=14.64 owner=0 stolen=3000000 PASS
+mutex seconds=0.251165 Mitems/s=11.94 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.23x
+thieves=2 trial=2
+items=3000000 thieves=2
+lock-free seconds=0.215696 Mitems/s=13.91 owner=0 stolen=3000000 PASS
+mutex seconds=0.289165 Mitems/s=10.37 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.34x
+thieves=2 trial=3
+items=3000000 thieves=2
+lock-free seconds=0.192816 Mitems/s=15.56 owner=0 stolen=3000000 PASS
+mutex seconds=0.270423 Mitems/s=11.09 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.40x
+thieves=2 trial=4
+items=3000000 thieves=2
+lock-free seconds=0.194094 Mitems/s=15.46 owner=0 stolen=3000000 PASS
+mutex seconds=0.259550 Mitems/s=11.56 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.34x
+thieves=2 trial=5
+items=3000000 thieves=2
+lock-free seconds=0.209952 Mitems/s=14.29 owner=0 stolen=3000000 PASS
+mutex seconds=0.254498 Mitems/s=11.79 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.21x
+thieves=2 trial=6
+items=3000000 thieves=2
+lock-free seconds=0.213975 Mitems/s=14.02 owner=0 stolen=3000000 PASS
+mutex seconds=0.221485 Mitems/s=13.54 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.04x
+thieves=2 trial=7
+items=3000000 thieves=2
+lock-free seconds=0.212275 Mitems/s=14.13 owner=0 stolen=3000000 PASS
+mutex seconds=0.287741 Mitems/s=10.43 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.36x
+thieves=2 trial=8
+items=3000000 thieves=2
+lock-free seconds=0.202414 Mitems/s=14.82 owner=0 stolen=3000000 PASS
+mutex seconds=0.257393 Mitems/s=11.66 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.27x
+thieves=2 trial=9
+items=3000000 thieves=2
+lock-free seconds=0.206591 Mitems/s=14.52 owner=0 stolen=3000000 PASS
+mutex seconds=0.252911 Mitems/s=11.86 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.22x
+thieves=2 trial=10
+items=3000000 thieves=2
+lock-free seconds=0.192541 Mitems/s=15.58 owner=0 stolen=3000000 PASS
+mutex seconds=0.258225 Mitems/s=11.62 owner=0 stolen=3000000 PASS
+mutex/lock-free time=1.34x
+thieves=4 warmup=1
+items=3000000 thieves=4
+lock-free seconds=0.525716 Mitems/s=5.71 owner=0 stolen=3000000 PASS
+mutex seconds=0.143053 Mitems/s=20.97 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.27x
+thieves=4 warmup=2
+items=3000000 thieves=4
+lock-free seconds=0.512743 Mitems/s=5.85 owner=0 stolen=3000000 PASS
+mutex seconds=0.145390 Mitems/s=20.63 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.28x
+thieves=4 trial=1
+items=3000000 thieves=4
+lock-free seconds=0.359478 Mitems/s=8.35 owner=0 stolen=3000000 PASS
+mutex seconds=0.142237 Mitems/s=21.09 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.40x
+thieves=4 trial=2
+items=3000000 thieves=4
+lock-free seconds=0.470003 Mitems/s=6.38 owner=0 stolen=3000000 PASS
+mutex seconds=0.142783 Mitems/s=21.01 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.30x
+thieves=4 trial=3
+items=3000000 thieves=4
+lock-free seconds=0.507679 Mitems/s=5.91 owner=0 stolen=3000000 PASS
+mutex seconds=0.143970 Mitems/s=20.84 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.28x
+thieves=4 trial=4
+items=3000000 thieves=4
+lock-free seconds=0.522181 Mitems/s=5.75 owner=0 stolen=3000000 PASS
+mutex seconds=0.143635 Mitems/s=20.89 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.28x
+thieves=4 trial=5
+items=3000000 thieves=4
+lock-free seconds=0.508419 Mitems/s=5.90 owner=0 stolen=3000000 PASS
+mutex seconds=0.146738 Mitems/s=20.44 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.29x
+thieves=4 trial=6
+items=3000000 thieves=4
+lock-free seconds=0.502717 Mitems/s=5.97 owner=0 stolen=3000000 PASS
+mutex seconds=0.142558 Mitems/s=21.04 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.28x
+thieves=4 trial=7
+items=3000000 thieves=4
+lock-free seconds=0.533434 Mitems/s=5.62 owner=0 stolen=3000000 PASS
+mutex seconds=0.144038 Mitems/s=20.83 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.27x
+thieves=4 trial=8
+items=3000000 thieves=4
+lock-free seconds=0.536427 Mitems/s=5.59 owner=0 stolen=3000000 PASS
+mutex seconds=0.141430 Mitems/s=21.21 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.26x
+thieves=4 trial=9
+items=3000000 thieves=4
+lock-free seconds=0.501528 Mitems/s=5.98 owner=0 stolen=3000000 PASS
+mutex seconds=0.153004 Mitems/s=19.61 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.31x
+thieves=4 trial=10
+items=3000000 thieves=4
+lock-free seconds=0.519449 Mitems/s=5.78 owner=0 stolen=3000000 PASS
+mutex seconds=0.145023 Mitems/s=20.69 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.28x
+thieves=8 warmup=1
+items=3000000 thieves=8
+lock-free seconds=0.857782 Mitems/s=3.50 owner=0 stolen=3000000 PASS
+mutex seconds=0.211122 Mitems/s=14.21 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.25x
+thieves=8 warmup=2
+items=3000000 thieves=8
+lock-free seconds=0.821950 Mitems/s=3.65 owner=0 stolen=3000000 PASS
+mutex seconds=0.205529 Mitems/s=14.60 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.25x
+thieves=8 trial=1
+items=3000000 thieves=8
+lock-free seconds=0.837844 Mitems/s=3.58 owner=0 stolen=3000000 PASS
+mutex seconds=0.210394 Mitems/s=14.26 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.25x
+thieves=8 trial=2
+items=3000000 thieves=8
+lock-free seconds=0.890483 Mitems/s=3.37 owner=0 stolen=3000000 PASS
+mutex seconds=0.204161 Mitems/s=14.69 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.23x
+thieves=8 trial=3
+items=3000000 thieves=8
+lock-free seconds=0.857721 Mitems/s=3.50 owner=0 stolen=3000000 PASS
+mutex seconds=0.210652 Mitems/s=14.24 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.25x
+thieves=8 trial=4
+items=3000000 thieves=8
+lock-free seconds=0.867285 Mitems/s=3.46 owner=0 stolen=3000000 PASS
+mutex seconds=0.209336 Mitems/s=14.33 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.24x
+thieves=8 trial=5
+items=3000000 thieves=8
+lock-free seconds=0.891306 Mitems/s=3.37 owner=0 stolen=3000000 PASS
+mutex seconds=0.204428 Mitems/s=14.68 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.23x
+thieves=8 trial=6
+items=3000000 thieves=8
+lock-free seconds=0.890696 Mitems/s=3.37 owner=0 stolen=3000000 PASS
+mutex seconds=0.205052 Mitems/s=14.63 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.23x
+thieves=8 trial=7
+items=3000000 thieves=8
+lock-free seconds=0.902812 Mitems/s=3.32 owner=0 stolen=3000000 PASS
+mutex seconds=0.199609 Mitems/s=15.03 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.22x
+thieves=8 trial=8
+items=3000000 thieves=8
+lock-free seconds=0.900604 Mitems/s=3.33 owner=0 stolen=3000000 PASS
+mutex seconds=0.207174 Mitems/s=14.48 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.23x
+thieves=8 trial=9
+items=3000000 thieves=8
+lock-free seconds=0.900049 Mitems/s=3.33 owner=0 stolen=3000000 PASS
+mutex seconds=0.207716 Mitems/s=14.44 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.23x
+thieves=8 trial=10
+items=3000000 thieves=8
+lock-free seconds=0.856922 Mitems/s=3.50 owner=0 stolen=3000000 PASS
+mutex seconds=0.202377 Mitems/s=14.82 owner=0 stolen=3000000 PASS
+mutex/lock-free time=0.24x
