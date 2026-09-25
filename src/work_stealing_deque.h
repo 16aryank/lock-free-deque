@@ -41,8 +41,6 @@ public:
     explicit WorkStealingDeque(BufferPool<T>& pool, std::size_t log_initial_size = 10)
         : pool_(pool),
           active_array_(pool.try_acquire(log_initial_size)),
-          bottom_(0),
-          top_(0),
           min_log_size_(log_initial_size) {
         if (active_array_.load(std::memory_order_seq_cst) == nullptr) {
             throw std::bad_alloc{};
@@ -65,16 +63,19 @@ public:
     PushResult try_push_bottom(T x) {
         std::int64_t b = bottom_.load(std::memory_order_seq_cst);
         auto* a = active_array_.load(std::memory_order_seq_cst);
-        std::int64_t t = top_.load(std::memory_order_seq_cst);
-
-        std::int64_t size = b - t;
-        if (size >= a->size() - 1) {
-            auto* destination = pool_.try_acquire(a->log_size() + 1);
-            if (!destination) {
-                return PushResult::NO_BUFFER_ACQUIRED;
+        // Only the owner uses this lower bound on top_. A stale value can
+        // overestimate occupancy, so refresh it before deciding to grow.
+        if (b - cached_top_ >= a->size() - 1) {
+            const auto t = top_.load(std::memory_order_seq_cst);
+            cached_top_ = t;
+            if (b - t >= a->size() - 1) {
+                auto* destination = pool_.try_acquire(a->log_size() + 1);
+                if (!destination) {
+                    return PushResult::NO_BUFFER_ACQUIRED;
+                }
+                a = a->grow_into(destination, b, t);
+                active_array_.store(a, std::memory_order_seq_cst);
             }
-            a = a->grow_into(destination, b, t);
-            active_array_.store(a, std::memory_order_seq_cst);
         }
 
         a->store(b, std::move(x));
@@ -83,6 +84,7 @@ public:
     }
 
     StealResult<T> steal() {
+        // The slot and CAS must use a top snapshot from this attempt.
         auto t = top_.load(std::memory_order_seq_cst);
         auto* old_array = active_array_.load(std::memory_order_seq_cst);
         auto b = bottom_.load(std::memory_order_seq_cst);
@@ -121,7 +123,10 @@ public:
         auto* a = active_array_.load(std::memory_order_seq_cst);
         bottom_.store(b, std::memory_order_seq_cst);
 
+        // A cached lower bound cannot distinguish a remaining item from the
+        // last item, where the owner must compete with thieves using CAS.
         auto t = top_.load(std::memory_order_seq_cst);
+        cached_top_ = t;
         auto size = b - t;
 
         if (size < 0) {
@@ -216,8 +221,9 @@ private:
 
     BufferPool<T>& pool_;
     std::atomic<CircularArray<T>*> active_array_;
-    std::atomic<std::int64_t> bottom_;
-    std::atomic<std::int64_t> top_;
+    std::atomic<std::int64_t> bottom_{ 0 };
+    std::atomic<std::int64_t> top_{ 0 };
+    std::int64_t cached_top_{ 0 }; // owner-only lower bound on top_
     std::size_t min_log_size_;
 #ifdef DEQUE_TEST_HOOKS
     DequeTestHooks* test_hooks_{ nullptr };
