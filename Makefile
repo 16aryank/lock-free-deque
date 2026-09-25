@@ -4,11 +4,11 @@ CPPFLAGS += -Isrc
 LDFLAGS = -L/opt/homebrew/lib -lgtest -lgtest_main -pthread
 BENCH_ARGS ?= 100000 4
 TSAN_ARGS ?= 10000 4
-PROFILE_ARGS ?= 10000000 4 5 lock-free streaming
+PROFILE_ARGS ?= 10000000 4
 PROFILE_OUTPUT ?= build/profile.json.gz
 HEADERS = src/work_stealing_deque.h src/circular_array.h src/atomic_utils.h src/buffer_pool.h src/steal_result.h src/mutex/work_stealing_deque.h
-TEST_SOURCES = test/test_deque.cpp test/test_buffer_pool.cpp test/test_mutex_deque.cpp
-.PHONY: make clean benchmark benchmark-tsan benchmark-profile test test-tsan
+TEST_SOURCES = test/test_deque.cpp test/test_buffer_pool.cpp test/test_reclamation.cpp test/test_allocation.cpp test/test_mutex_deque.cpp
+.PHONY: make clean benchmark benchmark-compare benchmark-tsan benchmark-profile test test-tsan
 
 make: build/test_deque
 
@@ -19,7 +19,7 @@ clean:
 	rm -rf build
 
 build/test_deque: $(TEST_SOURCES) $(HEADERS) Makefile | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_SOURCES) $(LDFLAGS) -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DDEQUE_TEST_HOOKS $(TEST_SOURCES) $(LDFLAGS) -o $@
 
 test: build/test_deque
 	./build/test_deque
@@ -29,6 +29,9 @@ build/benchmark_deque: test/benchmark_deque.cpp $(HEADERS) Makefile | build
 
 benchmark: build/benchmark_deque
 	./build/benchmark_deque $(BENCH_ARGS)
+
+benchmark-compare: build/benchmark_deque
+	./build/benchmark_deque $(BENCH_ARGS) compare
 
 build/benchmark_deque_profile: test/benchmark_deque.cpp $(HEADERS) Makefile | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O3 -g -DNDEBUG -fno-omit-frame-pointer $< -pthread -o $@
@@ -43,7 +46,7 @@ benchmark-tsan: build/benchmark_deque_tsan
 	TSAN_OPTIONS=halt_on_error=1 ./build/benchmark_deque_tsan $(TSAN_ARGS)
 
 build/test_deque_tsan: $(TEST_SOURCES) $(HEADERS) Makefile | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O1 -g -fsanitize=thread -fno-omit-frame-pointer $(TEST_SOURCES) $(LDFLAGS) -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DDEQUE_TEST_HOOKS -O1 -g -fsanitize=thread -fno-omit-frame-pointer $(TEST_SOURCES) $(LDFLAGS) -o $@
 
 test-tsan: build/test_deque_tsan
 	TSAN_OPTIONS=halt_on_error=1 ./build/test_deque_tsan
