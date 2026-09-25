@@ -81,7 +81,7 @@ private:
     const std::size_t log_size_;
     const std::unique_ptr<std::atomic<T>[]> segment_;
     std::uint64_t low_water_mark_ = std::numeric_limits<std::uint64_t>::max();
-    CircularArray* prev_ = nullptr;
+    CircularArray* prev_{ nullptr };
 
     friend class BufferPool<T>;
     friend class WorkStealingDeque<T>;

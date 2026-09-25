@@ -16,6 +16,25 @@ enum class PushResult {
     NO_BUFFER_ACQUIRED,
 };
 
+#ifdef DEQUE_TEST_HOOKS
+struct DequeTestHook {
+    void (*callback)(void*) = nullptr;
+    void* context = nullptr;
+
+    void run() const {
+        if (callback) callback(context);
+    }
+};
+
+struct DequeTestHooks {
+    DequeTestHook after_final_array_snapshot;
+    DequeTestHook after_speculative_slot_read;
+    DequeTestHook after_shrink_bottom_shift;
+    DequeTestHook after_shrink_top_snapshot;
+    DequeTestHook before_last_pop_cas;
+};
+#endif
+
 template <LockFreeAtomicValue T>
 class WorkStealingDeque {
 public:
@@ -24,7 +43,6 @@ public:
           active_array_(pool.try_acquire(log_initial_size)),
           bottom_(0),
           top_(0),
-          local_top_(0),
           min_log_size_(log_initial_size) {
         if (active_array_.load(std::memory_order_seq_cst) == nullptr) {
             throw std::bad_alloc{};
@@ -39,14 +57,16 @@ public:
     WorkStealingDeque(const WorkStealingDeque&) = delete;
     WorkStealingDeque& operator=(const WorkStealingDeque&) = delete;
 
+#ifdef DEQUE_TEST_HOOKS
+    // Set before starting workers; keep the hook object alive through join.
+    void set_test_hooks(DequeTestHooks* hooks) noexcept { test_hooks_ = hooks; }
+#endif
+
     PushResult try_push_bottom(T x) {
         std::int64_t b = bottom_.load(std::memory_order_seq_cst);
-        std::int64_t t = local_top_;
         auto* a = active_array_.load(std::memory_order_seq_cst);
-        if (local_top_ == 0 || (b - local_top_ >= a->size() - 1)) {
-            t = top_.load(std::memory_order_seq_cst);
-        }
-       
+        std::int64_t t = top_.load(std::memory_order_seq_cst);
+
         std::int64_t size = b - t;
         if (size >= a->size() - 1) {
             auto* destination = pool_.try_acquire(a->log_size() + 1);
@@ -67,6 +87,9 @@ public:
         auto* old_array = active_array_.load(std::memory_order_seq_cst);
         auto b = bottom_.load(std::memory_order_seq_cst);
         auto* a = active_array_.load(std::memory_order_seq_cst);
+#ifdef DEQUE_TEST_HOOKS
+        if (test_hooks_) test_hooks_->after_final_array_snapshot.run();
+#endif
 
         std::int64_t size = b - t;
         if (size <= 0) {
@@ -83,6 +106,9 @@ public:
         }
 
         T x = a->load(t);
+#ifdef DEQUE_TEST_HOOKS
+        if (test_hooks_) test_hooks_->after_speculative_slot_read.run();
+#endif
         if (!cas_top(t, t + 1)) {
             return StealResult<T>{StealState::ABORT};
         }
@@ -109,6 +135,9 @@ public:
             return x;
         }
 
+#ifdef DEQUE_TEST_HOOKS
+        if (test_hooks_) test_hooks_->before_last_pop_cas.run();
+#endif
         if (!cas_top(t, t + 1)) {
             bottom_.store(t + 1, std::memory_order_seq_cst);
             return std::nullopt;
@@ -151,7 +180,13 @@ private:
         active_array_.store(new_array, std::memory_order_seq_cst);
         auto ss = static_cast<std::int64_t>(new_array->size());
         bottom_.store(b + ss, std::memory_order_seq_cst);
+#ifdef DEQUE_TEST_HOOKS
+        if (test_hooks_) test_hooks_->after_shrink_bottom_shift.run();
+#endif
         auto top_snapshot = top_.load(std::memory_order_seq_cst);
+#ifdef DEQUE_TEST_HOOKS
+        if (test_hooks_) test_hooks_->after_shrink_top_snapshot.run();
+#endif
         if (!cas_top(top_snapshot, top_snapshot + ss)) {
             bottom_.store(b, std::memory_order_seq_cst);
         }
@@ -183,6 +218,8 @@ private:
     std::atomic<CircularArray<T>*> active_array_;
     std::atomic<std::int64_t> bottom_;
     std::atomic<std::int64_t> top_;
-    std::int64_t local_top_;
     std::size_t min_log_size_;
+#ifdef DEQUE_TEST_HOOKS
+    DequeTestHooks* test_hooks_{ nullptr };
+#endif
 };
