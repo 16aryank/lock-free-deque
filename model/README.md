@@ -25,6 +25,7 @@ Variants are selected with compiler definitions:
 | `MODEL_SC_REFERENCE` | Original all-SC deque and pool |
 | none | Stage 1 owner loads and pool handoff |
 | `MODEL_STAGE2_CANDIDATE` | Stage 1 plus the stage 2 acquire/release stores, loads, and SC fences; shrink and top CAS remain SC |
+| `MODEL_STAGE3_CANDIDATE` | Stage 1 indices and pool, release slot writes (including copies), acquire thief speculative reads; owner copy/pop reads remain SC |
 
 The three `MODEL_PROBE_*` definitions deliberately assert that a particular
 path is unreachable. GenMC's expected assertion failure demonstrates that
@@ -53,6 +54,7 @@ docker run --rm --platform linux/amd64 --network none \
 | `MODEL_SC_REFERENCE` | SC | 4,146 | No errors |
 | Stage 1 (no definition) | RC11 | 4,146 | No errors |
 | `MODEL_STAGE2_CANDIDATE` | RC11 | 4,146 | No errors |
+| `MODEL_STAGE3_CANDIDATE` | RC11 | 4,146 | No errors |
 
 Each `MODEL_PROBE_*` run under the stage 2 candidate produced the expected
 assertion failure, confirming that all three paths occur within this bound.
@@ -62,7 +64,11 @@ combined conditional return; the equivalent separate conditions in `steal`
 avoid that tool failure. `--disable-estimation` skips an optional preliminary
 estimate, not the exhaustive check.
 
-## Ordering argument for the candidate
+The three reachability probes also fired under `MODEL_STAGE3_CANDIDATE`.
+The borrower-read trace shows a thief's acquire slot load reading value 100
+from the borrower's release slot store; the thief's old top CAS fails.
+
+## Ordering argument for stage 2
 
 The release bottom store follows the task's initialization and SC slot write.
 A thief that acquires that bottom value observes the task and any preceding
@@ -90,10 +96,22 @@ claim the borrower's value. The bounded check exercises this chain, including
 a speculative borrower-value read whose CAS fails. Other stale-pointer
 executions still rely on the retained SC snapshots and modulus recheck.
 
+## Ordering argument for stage 3
+
+A push or array copy writes its slot with release ordering. A thief's acquire
+speculative read synchronizes with whichever release slot write supplied the
+value. If that is a borrower's write, the path from the old owner's shrink
+invalidation through pool release/acquire precedes the borrower's write and
+the thief's later top CAS. On shrink CAS success, the old owner's SC top
+update invalidates the old claim. On CAS failure, its SC failure read observes
+an intervening top update before the SC bottom restoration and pool release.
+The same release ordering covers `store_no_mark` during growth and shrink
+copies. Owner copy and pop reads stay SC in this candidate.
+
 This is a bounded translation, not a proof for arbitrary capacities or
 executions. It covers one retained buffer and one borrow/return cycle; it
 does not cover multiple retained arrays, repeated ABA pointer reuse,
 pointer payload lifetime, or lock-free progress. The native pointer-payload
 and concurrent owner/thief tests in `test/test_ordering.cpp` supplement it.
-The stage 2 ordering variant in this model is experimental; the active deque
-source still uses stage 1 ordering.
+The stage 2 and stage 3 ordering variants in this model are experimental;
+the active deque source still uses stage 1 ordering.

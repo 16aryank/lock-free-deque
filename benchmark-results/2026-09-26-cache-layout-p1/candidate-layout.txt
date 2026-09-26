@@ -1,0 +1,1 @@
+standard_interference=64 separation=128 align=128 size=512 active=8 bottom=128 top=256 cached_top=384

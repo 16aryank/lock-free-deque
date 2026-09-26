@@ -1,0 +1,28 @@
+{
+  "recorded_utc": "2026-09-26T18:44:38.630023+00:00",
+  "git_commit": "6428dd1c4aa061848f2420639c6ba9ac238de453",
+  "git_status": "M .gitignore\n M model/README.md\n M model/stage2_model.c\n M src/work_stealing_deque.h\n M test/test_deque.cpp\n?? MEMORY_ORDERING_PLAN.md\n?? benchmarks/compare_variants.py",
+  "platform": "macOS-15.7.9-arm64-arm-64bit",
+  "logical_cpus": 10,
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "items": 3000000,
+  "thief_counts": [
+    0,
+    1,
+    2,
+    4,
+    8
+  ],
+  "warmups_per_variant_per_count": 2,
+  "measured_pairs_per_count": 10,
+  "order": "reference then candidate on odd trials; reversed on even trials",
+  "reference": "/Users/aryankumar/Desktop/projects/lock-free-deque/build/p1-layout/reference",
+  "candidate": "/Users/aryankumar/Desktop/projects/lock-free-deque/build/benchmark_deque",
+  "sha256": {
+    "reference_binary": "edaf0f1dd1d75228d6f7cb52056ac691d6c35fc4e22bbd4e4a2ec884e02ded02",
+    "candidate_binary": "9a9389da5cfff0ac0c7413f67302de8493070efca76cc9d1a4f8b2de7836871c",
+    "benchmark_source": "aedbe72f903fc706a654ca91310da53b4206d00146428d602f2d0c0c5f0aebf4",
+    "candidate_header": "fa113f08e5a1f88daca21d04a28306025d9b864a415fe15ca28a62115ad544ea",
+    "collector": "7cf29b1143b0af8067cd1c444b3e57a493d869aaaa986c111914358eade37b45"
+  }
+}

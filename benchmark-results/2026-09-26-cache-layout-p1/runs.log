@@ -1,0 +1,360 @@
+thieves=0 reference warmup=1
+items=3000000 thieves=0
+lock-free seconds=0.024659 Mitems/s=121.66 owner=3000000 stolen=0 PASS
+thieves=0 reference warmup=2
+items=3000000 thieves=0
+lock-free seconds=0.019336 Mitems/s=155.15 owner=3000000 stolen=0 PASS
+thieves=0 candidate warmup=1
+items=3000000 thieves=0
+lock-free seconds=0.020529 Mitems/s=146.13 owner=3000000 stolen=0 PASS
+thieves=0 candidate warmup=2
+items=3000000 thieves=0
+lock-free seconds=0.023398 Mitems/s=128.21 owner=3000000 stolen=0 PASS
+thieves=0 trial=1 reference
+items=3000000 thieves=0
+lock-free seconds=0.021098 Mitems/s=142.20 owner=3000000 stolen=0 PASS
+thieves=0 trial=1 candidate
+items=3000000 thieves=0
+lock-free seconds=0.020364 Mitems/s=147.32 owner=3000000 stolen=0 PASS
+thieves=0 trial=2 candidate
+items=3000000 thieves=0
+lock-free seconds=0.016911 Mitems/s=177.40 owner=3000000 stolen=0 PASS
+thieves=0 trial=2 reference
+items=3000000 thieves=0
+lock-free seconds=0.018446 Mitems/s=162.64 owner=3000000 stolen=0 PASS
+thieves=0 trial=3 reference
+items=3000000 thieves=0
+lock-free seconds=0.016523 Mitems/s=181.56 owner=3000000 stolen=0 PASS
+thieves=0 trial=3 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015798 Mitems/s=189.89 owner=3000000 stolen=0 PASS
+thieves=0 trial=4 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015821 Mitems/s=189.62 owner=3000000 stolen=0 PASS
+thieves=0 trial=4 reference
+items=3000000 thieves=0
+lock-free seconds=0.015678 Mitems/s=191.36 owner=3000000 stolen=0 PASS
+thieves=0 trial=5 reference
+items=3000000 thieves=0
+lock-free seconds=0.015745 Mitems/s=190.53 owner=3000000 stolen=0 PASS
+thieves=0 trial=5 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015848 Mitems/s=189.29 owner=3000000 stolen=0 PASS
+thieves=0 trial=6 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015584 Mitems/s=192.51 owner=3000000 stolen=0 PASS
+thieves=0 trial=6 reference
+items=3000000 thieves=0
+lock-free seconds=0.015705 Mitems/s=191.03 owner=3000000 stolen=0 PASS
+thieves=0 trial=7 reference
+items=3000000 thieves=0
+lock-free seconds=0.015474 Mitems/s=193.87 owner=3000000 stolen=0 PASS
+thieves=0 trial=7 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015861 Mitems/s=189.15 owner=3000000 stolen=0 PASS
+thieves=0 trial=8 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015878 Mitems/s=188.94 owner=3000000 stolen=0 PASS
+thieves=0 trial=8 reference
+items=3000000 thieves=0
+lock-free seconds=0.015953 Mitems/s=188.05 owner=3000000 stolen=0 PASS
+thieves=0 trial=9 reference
+items=3000000 thieves=0
+lock-free seconds=0.015708 Mitems/s=190.98 owner=3000000 stolen=0 PASS
+thieves=0 trial=9 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015436 Mitems/s=194.35 owner=3000000 stolen=0 PASS
+thieves=0 trial=10 candidate
+items=3000000 thieves=0
+lock-free seconds=0.015485 Mitems/s=193.73 owner=3000000 stolen=0 PASS
+thieves=0 trial=10 reference
+items=3000000 thieves=0
+lock-free seconds=0.015584 Mitems/s=192.51 owner=3000000 stolen=0 PASS
+thieves=1 reference warmup=1
+items=3000000 thieves=1
+lock-free seconds=0.093933 Mitems/s=31.94 owner=0 stolen=3000000 PASS
+thieves=1 reference warmup=2
+items=3000000 thieves=1
+lock-free seconds=0.096269 Mitems/s=31.16 owner=0 stolen=3000000 PASS
+thieves=1 candidate warmup=1
+items=3000000 thieves=1
+lock-free seconds=0.063681 Mitems/s=47.11 owner=0 stolen=3000000 PASS
+thieves=1 candidate warmup=2
+items=3000000 thieves=1
+lock-free seconds=0.065129 Mitems/s=46.06 owner=0 stolen=3000000 PASS
+thieves=1 trial=1 reference
+items=3000000 thieves=1
+lock-free seconds=0.100803 Mitems/s=29.76 owner=0 stolen=3000000 PASS
+thieves=1 trial=1 candidate
+items=3000000 thieves=1
+lock-free seconds=0.071402 Mitems/s=42.02 owner=0 stolen=3000000 PASS
+thieves=1 trial=2 candidate
+items=3000000 thieves=1
+lock-free seconds=0.071057 Mitems/s=42.22 owner=0 stolen=3000000 PASS
+thieves=1 trial=2 reference
+items=3000000 thieves=1
+lock-free seconds=0.099948 Mitems/s=30.02 owner=0 stolen=3000000 PASS
+thieves=1 trial=3 reference
+items=3000000 thieves=1
+lock-free seconds=0.091207 Mitems/s=32.89 owner=0 stolen=3000000 PASS
+thieves=1 trial=3 candidate
+items=3000000 thieves=1
+lock-free seconds=0.069471 Mitems/s=43.18 owner=0 stolen=3000000 PASS
+thieves=1 trial=4 candidate
+items=3000000 thieves=1
+lock-free seconds=0.071495 Mitems/s=41.96 owner=0 stolen=3000000 PASS
+thieves=1 trial=4 reference
+items=3000000 thieves=1
+lock-free seconds=0.094522 Mitems/s=31.74 owner=0 stolen=3000000 PASS
+thieves=1 trial=5 reference
+items=3000000 thieves=1
+lock-free seconds=0.086865 Mitems/s=34.54 owner=0 stolen=3000000 PASS
+thieves=1 trial=5 candidate
+items=3000000 thieves=1
+lock-free seconds=0.066185 Mitems/s=45.33 owner=0 stolen=3000000 PASS
+thieves=1 trial=6 candidate
+items=3000000 thieves=1
+lock-free seconds=0.064650 Mitems/s=46.40 owner=0 stolen=3000000 PASS
+thieves=1 trial=6 reference
+items=3000000 thieves=1
+lock-free seconds=0.096716 Mitems/s=31.02 owner=0 stolen=3000000 PASS
+thieves=1 trial=7 reference
+items=3000000 thieves=1
+lock-free seconds=0.091989 Mitems/s=32.61 owner=0 stolen=3000000 PASS
+thieves=1 trial=7 candidate
+items=3000000 thieves=1
+lock-free seconds=0.068705 Mitems/s=43.66 owner=0 stolen=3000000 PASS
+thieves=1 trial=8 candidate
+items=3000000 thieves=1
+lock-free seconds=0.066688 Mitems/s=44.99 owner=0 stolen=3000000 PASS
+thieves=1 trial=8 reference
+items=3000000 thieves=1
+lock-free seconds=0.095356 Mitems/s=31.46 owner=0 stolen=3000000 PASS
+thieves=1 trial=9 reference
+items=3000000 thieves=1
+lock-free seconds=0.090929 Mitems/s=32.99 owner=0 stolen=3000000 PASS
+thieves=1 trial=9 candidate
+items=3000000 thieves=1
+lock-free seconds=0.072819 Mitems/s=41.20 owner=0 stolen=3000000 PASS
+thieves=1 trial=10 candidate
+items=3000000 thieves=1
+lock-free seconds=0.071054 Mitems/s=42.22 owner=0 stolen=3000000 PASS
+thieves=1 trial=10 reference
+items=3000000 thieves=1
+lock-free seconds=0.073163 Mitems/s=41.00 owner=0 stolen=3000000 PASS
+thieves=2 reference warmup=1
+items=3000000 thieves=2
+lock-free seconds=0.149918 Mitems/s=20.01 owner=0 stolen=3000000 PASS
+thieves=2 reference warmup=2
+items=3000000 thieves=2
+lock-free seconds=0.154005 Mitems/s=19.48 owner=0 stolen=3000000 PASS
+thieves=2 candidate warmup=1
+items=3000000 thieves=2
+lock-free seconds=0.083466 Mitems/s=35.94 owner=0 stolen=3000000 PASS
+thieves=2 candidate warmup=2
+items=3000000 thieves=2
+lock-free seconds=0.067949 Mitems/s=44.15 owner=0 stolen=3000000 PASS
+thieves=2 trial=1 reference
+items=3000000 thieves=2
+lock-free seconds=0.153678 Mitems/s=19.52 owner=0 stolen=3000000 PASS
+thieves=2 trial=1 candidate
+items=3000000 thieves=2
+lock-free seconds=0.087560 Mitems/s=34.26 owner=0 stolen=3000000 PASS
+thieves=2 trial=2 candidate
+items=3000000 thieves=2
+lock-free seconds=0.094022 Mitems/s=31.91 owner=0 stolen=3000000 PASS
+thieves=2 trial=2 reference
+items=3000000 thieves=2
+lock-free seconds=0.150003 Mitems/s=20.00 owner=0 stolen=3000000 PASS
+thieves=2 trial=3 reference
+items=3000000 thieves=2
+lock-free seconds=0.159686 Mitems/s=18.79 owner=0 stolen=3000000 PASS
+thieves=2 trial=3 candidate
+items=3000000 thieves=2
+lock-free seconds=0.095432 Mitems/s=31.44 owner=0 stolen=3000000 PASS
+thieves=2 trial=4 candidate
+items=3000000 thieves=2
+lock-free seconds=0.128974 Mitems/s=23.26 owner=0 stolen=3000000 PASS
+thieves=2 trial=4 reference
+items=3000000 thieves=2
+lock-free seconds=0.156751 Mitems/s=19.14 owner=0 stolen=3000000 PASS
+thieves=2 trial=5 reference
+items=3000000 thieves=2
+lock-free seconds=0.152236 Mitems/s=19.71 owner=0 stolen=3000000 PASS
+thieves=2 trial=5 candidate
+items=3000000 thieves=2
+lock-free seconds=0.077354 Mitems/s=38.78 owner=0 stolen=3000000 PASS
+thieves=2 trial=6 candidate
+items=3000000 thieves=2
+lock-free seconds=0.122227 Mitems/s=24.54 owner=0 stolen=3000000 PASS
+thieves=2 trial=6 reference
+items=3000000 thieves=2
+lock-free seconds=0.151352 Mitems/s=19.82 owner=0 stolen=3000000 PASS
+thieves=2 trial=7 reference
+items=3000000 thieves=2
+lock-free seconds=0.125582 Mitems/s=23.89 owner=0 stolen=3000000 PASS
+thieves=2 trial=7 candidate
+items=3000000 thieves=2
+lock-free seconds=0.155394 Mitems/s=19.31 owner=0 stolen=3000000 PASS
+thieves=2 trial=8 candidate
+items=3000000 thieves=2
+lock-free seconds=0.105192 Mitems/s=28.52 owner=0 stolen=3000000 PASS
+thieves=2 trial=8 reference
+items=3000000 thieves=2
+lock-free seconds=0.146928 Mitems/s=20.42 owner=0 stolen=3000000 PASS
+thieves=2 trial=9 reference
+items=3000000 thieves=2
+lock-free seconds=0.152412 Mitems/s=19.68 owner=0 stolen=3000000 PASS
+thieves=2 trial=9 candidate
+items=3000000 thieves=2
+lock-free seconds=0.094149 Mitems/s=31.86 owner=0 stolen=3000000 PASS
+thieves=2 trial=10 candidate
+items=3000000 thieves=2
+lock-free seconds=0.088558 Mitems/s=33.88 owner=0 stolen=3000000 PASS
+thieves=2 trial=10 reference
+items=3000000 thieves=2
+lock-free seconds=0.152374 Mitems/s=19.69 owner=0 stolen=3000000 PASS
+thieves=4 reference warmup=1
+items=3000000 thieves=4
+lock-free seconds=0.537864 Mitems/s=5.58 owner=0 stolen=3000000 PASS
+thieves=4 reference warmup=2
+items=3000000 thieves=4
+lock-free seconds=0.373639 Mitems/s=8.03 owner=0 stolen=3000000 PASS
+thieves=4 candidate warmup=1
+items=3000000 thieves=4
+lock-free seconds=0.333383 Mitems/s=9.00 owner=0 stolen=3000000 PASS
+thieves=4 candidate warmup=2
+items=3000000 thieves=4
+lock-free seconds=0.293357 Mitems/s=10.23 owner=0 stolen=3000000 PASS
+thieves=4 trial=1 reference
+items=3000000 thieves=4
+lock-free seconds=0.352828 Mitems/s=8.50 owner=0 stolen=3000000 PASS
+thieves=4 trial=1 candidate
+items=3000000 thieves=4
+lock-free seconds=0.285489 Mitems/s=10.51 owner=0 stolen=3000000 PASS
+thieves=4 trial=2 candidate
+items=3000000 thieves=4
+lock-free seconds=0.301754 Mitems/s=9.94 owner=0 stolen=3000000 PASS
+thieves=4 trial=2 reference
+items=3000000 thieves=4
+lock-free seconds=0.462934 Mitems/s=6.48 owner=0 stolen=3000000 PASS
+thieves=4 trial=3 reference
+items=3000000 thieves=4
+lock-free seconds=0.505696 Mitems/s=5.93 owner=0 stolen=3000000 PASS
+thieves=4 trial=3 candidate
+items=3000000 thieves=4
+lock-free seconds=0.324323 Mitems/s=9.25 owner=0 stolen=3000000 PASS
+thieves=4 trial=4 candidate
+items=3000000 thieves=4
+lock-free seconds=0.312037 Mitems/s=9.61 owner=0 stolen=3000000 PASS
+thieves=4 trial=4 reference
+items=3000000 thieves=4
+lock-free seconds=0.492750 Mitems/s=6.09 owner=0 stolen=3000000 PASS
+thieves=4 trial=5 reference
+items=3000000 thieves=4
+lock-free seconds=0.516377 Mitems/s=5.81 owner=0 stolen=3000000 PASS
+thieves=4 trial=5 candidate
+items=3000000 thieves=4
+lock-free seconds=0.287821 Mitems/s=10.42 owner=0 stolen=3000000 PASS
+thieves=4 trial=6 candidate
+items=3000000 thieves=4
+lock-free seconds=0.263366 Mitems/s=11.39 owner=0 stolen=3000000 PASS
+thieves=4 trial=6 reference
+items=3000000 thieves=4
+lock-free seconds=0.418008 Mitems/s=7.18 owner=0 stolen=3000000 PASS
+thieves=4 trial=7 reference
+items=3000000 thieves=4
+lock-free seconds=0.519984 Mitems/s=5.77 owner=0 stolen=3000000 PASS
+thieves=4 trial=7 candidate
+items=3000000 thieves=4
+lock-free seconds=0.341425 Mitems/s=8.79 owner=0 stolen=3000000 PASS
+thieves=4 trial=8 candidate
+items=3000000 thieves=4
+lock-free seconds=0.345830 Mitems/s=8.67 owner=0 stolen=3000000 PASS
+thieves=4 trial=8 reference
+items=3000000 thieves=4
+lock-free seconds=0.516076 Mitems/s=5.81 owner=0 stolen=3000000 PASS
+thieves=4 trial=9 reference
+items=3000000 thieves=4
+lock-free seconds=0.532045 Mitems/s=5.64 owner=0 stolen=3000000 PASS
+thieves=4 trial=9 candidate
+items=3000000 thieves=4
+lock-free seconds=0.346121 Mitems/s=8.67 owner=0 stolen=3000000 PASS
+thieves=4 trial=10 candidate
+items=3000000 thieves=4
+lock-free seconds=0.348482 Mitems/s=8.61 owner=0 stolen=3000000 PASS
+thieves=4 trial=10 reference
+items=3000000 thieves=4
+lock-free seconds=0.534190 Mitems/s=5.62 owner=0 stolen=3000000 PASS
+thieves=8 reference warmup=1
+items=3000000 thieves=8
+lock-free seconds=0.940459 Mitems/s=3.19 owner=0 stolen=3000000 PASS
+thieves=8 reference warmup=2
+items=3000000 thieves=8
+lock-free seconds=0.933898 Mitems/s=3.21 owner=0 stolen=3000000 PASS
+thieves=8 candidate warmup=1
+items=3000000 thieves=8
+lock-free seconds=0.729791 Mitems/s=4.11 owner=0 stolen=3000000 PASS
+thieves=8 candidate warmup=2
+items=3000000 thieves=8
+lock-free seconds=0.715358 Mitems/s=4.19 owner=0 stolen=3000000 PASS
+thieves=8 trial=1 reference
+items=3000000 thieves=8
+lock-free seconds=0.877262 Mitems/s=3.42 owner=0 stolen=3000000 PASS
+thieves=8 trial=1 candidate
+items=3000000 thieves=8
+lock-free seconds=0.686253 Mitems/s=4.37 owner=0 stolen=3000000 PASS
+thieves=8 trial=2 candidate
+items=3000000 thieves=8
+lock-free seconds=0.648891 Mitems/s=4.62 owner=0 stolen=3000000 PASS
+thieves=8 trial=2 reference
+items=3000000 thieves=8
+lock-free seconds=0.602104 Mitems/s=4.98 owner=0 stolen=3000000 PASS
+thieves=8 trial=3 reference
+items=3000000 thieves=8
+lock-free seconds=0.755943 Mitems/s=3.97 owner=0 stolen=3000000 PASS
+thieves=8 trial=3 candidate
+items=3000000 thieves=8
+lock-free seconds=0.730407 Mitems/s=4.11 owner=0 stolen=3000000 PASS
+thieves=8 trial=4 candidate
+items=3000000 thieves=8
+lock-free seconds=0.543244 Mitems/s=5.52 owner=0 stolen=3000000 PASS
+thieves=8 trial=4 reference
+items=3000000 thieves=8
+lock-free seconds=0.934340 Mitems/s=3.21 owner=0 stolen=3000000 PASS
+thieves=8 trial=5 reference
+items=3000000 thieves=8
+lock-free seconds=0.906344 Mitems/s=3.31 owner=0 stolen=3000000 PASS
+thieves=8 trial=5 candidate
+items=3000000 thieves=8
+lock-free seconds=0.688645 Mitems/s=4.36 owner=0 stolen=3000000 PASS
+thieves=8 trial=6 candidate
+items=3000000 thieves=8
+lock-free seconds=0.481579 Mitems/s=6.23 owner=0 stolen=3000000 PASS
+thieves=8 trial=6 reference
+items=3000000 thieves=8
+lock-free seconds=0.890611 Mitems/s=3.37 owner=0 stolen=3000000 PASS
+thieves=8 trial=7 reference
+items=3000000 thieves=8
+lock-free seconds=0.915715 Mitems/s=3.28 owner=0 stolen=3000000 PASS
+thieves=8 trial=7 candidate
+items=3000000 thieves=8
+lock-free seconds=0.708026 Mitems/s=4.24 owner=0 stolen=3000000 PASS
+thieves=8 trial=8 candidate
+items=3000000 thieves=8
+lock-free seconds=0.700383 Mitems/s=4.28 owner=0 stolen=3000000 PASS
+thieves=8 trial=8 reference
+items=3000000 thieves=8
+lock-free seconds=0.944082 Mitems/s=3.18 owner=0 stolen=3000000 PASS
+thieves=8 trial=9 reference
+items=3000000 thieves=8
+lock-free seconds=0.873346 Mitems/s=3.44 owner=0 stolen=3000000 PASS
+thieves=8 trial=9 candidate
+items=3000000 thieves=8
+lock-free seconds=0.595872 Mitems/s=5.03 owner=0 stolen=3000000 PASS
+thieves=8 trial=10 candidate
+items=3000000 thieves=8
+lock-free seconds=0.707009 Mitems/s=4.24 owner=0 stolen=3000000 PASS
+thieves=8 trial=10 reference
+items=3000000 thieves=8
+lock-free seconds=0.866032 Mitems/s=3.46 owner=0 stolen=3000000 PASS

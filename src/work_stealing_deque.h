@@ -3,13 +3,27 @@
 #include "buffer_pool.h"
 #include "steal_result.h"
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <new>
 #include <optional>
 #include <utility>
 
 // Constant factor >= 3
 static inline constexpr unsigned int K = 4;
+
+// Keep the contended top index on its own cache line. This toolchain reports
+// 64 bytes on Apple ARM64, while the host reports 128-byte cache lines.
+// Elsewhere, use the standard library's interference size directly.
+#if defined(__APPLE__) && defined(__aarch64__)
+inline constexpr std::size_t kDequeInterferenceSize =
+    std::hardware_destructive_interference_size < 128
+        ? std::size_t{128} : std::hardware_destructive_interference_size;
+#else
+inline constexpr std::size_t kDequeInterferenceSize =
+    std::hardware_destructive_interference_size;
+#endif
 
 enum class PushResult {
     SUCCESS,
@@ -221,9 +235,9 @@ private:
 
     BufferPool<T>& pool_;
     std::atomic<CircularArray<T>*> active_array_;
-    std::atomic<std::int64_t> bottom_{ 0 };
-    std::atomic<std::int64_t> top_{ 0 };
-    std::int64_t cached_top_{ 0 }; // owner-only lower bound on top_
+    alignas(kDequeInterferenceSize) std::atomic<std::int64_t> bottom_{ 0 };
+    alignas(kDequeInterferenceSize) std::atomic<std::int64_t> top_{ 0 };
+    alignas(kDequeInterferenceSize) std::int64_t cached_top_{ 0 }; // owner-only lower bound on top_
     std::size_t min_log_size_;
 #ifdef DEQUE_TEST_HOOKS
     DequeTestHooks* test_hooks_{ nullptr };

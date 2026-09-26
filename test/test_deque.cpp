@@ -5,7 +5,9 @@
 #include <gtest/gtest.h>
 #include <array>
 #include <atomic>
+#include <cstdint>
 #include <deque>
+#include <new>
 #include <optional>
 #include <thread>
 #include <string>
@@ -47,6 +49,21 @@ static_assert(std::is_same_v<decltype(std::declval<WorkStealingDeque<int>>().act
                              std::atomic<CircularArray<int>*>>);
 
 constexpr std::size_t kDefaultLogSize = 4;
+
+TEST(WorkStealingDequeTest, ContendedFieldsOccupySeparateCacheLines) {
+    BufferPool<int> pool({{2, 1}});
+    WorkStealingDeque<int> deque(pool, 2);
+    const auto line = [](const auto& field) {
+        return reinterpret_cast<std::uintptr_t>(&field) / kDequeInterferenceSize;
+    };
+
+    EXPECT_GE(kDequeInterferenceSize, std::hardware_destructive_interference_size);
+    EXPECT_GE(alignof(WorkStealingDeque<int>), kDequeInterferenceSize);
+    EXPECT_EQ(sizeof(deque) % kDequeInterferenceSize, 0u);
+    EXPECT_NE(line(deque.active_array_), line(deque.bottom_));
+    EXPECT_NE(line(deque.bottom_), line(deque.top_));
+    EXPECT_NE(line(deque.top_), line(deque.cached_top_));
+}
 
 TEST(WorkStealingDequeTest, StealReturnsEmptySuccessAndAbort) {
     BufferPool<int> pool({{2, 1}, {kDefaultLogSize, 1}});

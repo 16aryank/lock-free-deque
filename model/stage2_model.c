@@ -13,7 +13,9 @@
 #define ABORT (-2)
 #define NO_BUFFER (-3)
 
-#if defined(MODEL_SC_REFERENCE) && defined(MODEL_STAGE2_CANDIDATE)
+#if (defined(MODEL_SC_REFERENCE) && defined(MODEL_STAGE2_CANDIDATE)) || \
+    (defined(MODEL_SC_REFERENCE) && defined(MODEL_STAGE3_CANDIDATE)) || \
+    (defined(MODEL_STAGE2_CANDIDATE) && defined(MODEL_STAGE3_CANDIDATE))
 #error Select one ordering variant
 #endif
 
@@ -49,6 +51,14 @@
 #define POP_RESTORE_ORDER memory_order_seq_cst
 #define STEAL_FENCE() ((void)0)
 #define POP_FENCE() ((void)0)
+#endif
+
+#ifdef MODEL_STAGE3_CANDIDATE
+#define SLOT_STORE_ORDER memory_order_release
+#define SPECULATIVE_SLOT_LOAD_ORDER memory_order_acquire
+#else
+#define SLOT_STORE_ORDER memory_order_seq_cst
+#define SPECULATIVE_SLOT_LOAD_ORDER memory_order_seq_cst
 #endif
 
 typedef struct Array Array;
@@ -88,9 +98,14 @@ static int slot_load(const Array *array, int64_t i) {
                                 memory_order_seq_cst);
 }
 
+static int slot_load_speculative(const Array *array, int64_t i) {
+    return atomic_load_explicit(&array->slots[i & (capacity(array) - 1)],
+                                SPECULATIVE_SLOT_LOAD_ORDER);
+}
+
 static void slot_store_no_mark(Array *array, int64_t i, int value) {
     atomic_store_explicit(&array->slots[i & (capacity(array) - 1)], value,
-                          memory_order_seq_cst);
+                          SLOT_STORE_ORDER);
 }
 
 static void slot_store(Array *array, int64_t i, int value) {
@@ -189,7 +204,7 @@ static int steal(Deque *deque, int *speculative_value) {
         if (t != top_snapshot) return ABORT;
         return EMPTY;
     }
-    int value = slot_load(array, t);
+    int value = slot_load_speculative(array, t);
     *speculative_value = value;
     return cas_top(deque, t, t + 1) ? value : ABORT;
 }
