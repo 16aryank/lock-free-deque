@@ -120,4 +120,62 @@ TEST(OrderingTest, PointerPayloadFieldsArePublishedBeforeSteal) {
     for (int uses : seen) EXPECT_EQ(uses, 1);
 }
 
+TEST(OrderingTest, ConcurrentPushPopAndStealConsumeEveryTaskOnce) {
+    constexpr int count = 128;
+    BufferPool<int> pool({{2, 1}, {3, 1}, {4, 1}, {5, 1},
+                          {6, 1}, {7, 1}, {8, 1}});
+    for (int round = 0; round < 64; ++round) {
+        WorkStealingDeque<int> deque(pool, 2);
+        std::array<std::vector<int>, 2> stolen;
+        std::vector<int> owner;
+        std::atomic<bool> done{false};
+        std::barrier start(3);
+        std::array<std::thread, 2> thieves;
+        for (int worker = 0; worker < 2; ++worker) {
+            thieves[worker] = std::thread([&, worker] {
+                start.arrive_and_wait();
+                for (;;) {
+                    auto result = deque.steal();
+                    if (result.state_ == StealState::SUCCESS) {
+                        if (result.value_) stolen[worker].push_back(*result.value_);
+                    } else if (result.state_ == StealState::EMPTY &&
+                               done.load(std::memory_order_acquire)) {
+                        break;
+                    }
+                }
+            });
+        }
+        start.arrive_and_wait();
+        bool pushed_all = true;
+        for (int item = 0; item < count; ++item) {
+            if (deque.try_push_bottom(round * count + item) != PushResult::SUCCESS) {
+                pushed_all = false;
+                break;
+            }
+            if (item % 2 == 0) {
+                if (auto popped = deque.pop_bottom()) owner.push_back(*popped);
+            }
+        }
+        done.store(true, std::memory_order_release);
+        for (auto& thief : thieves) thief.join();
+        while (auto popped = deque.pop_bottom()) owner.push_back(*popped);
+
+        std::array<int, count> seen{};
+        bool values_valid = pushed_all;
+        auto record = [&](int value) {
+            const int index = value - round * count;
+            if (index < 0 || index >= count) {
+                values_valid = false;
+            } else {
+                ++seen[index];
+            }
+        };
+        for (int value : owner) record(value);
+        for (const auto& history : stolen)
+            for (int value : history) record(value);
+        EXPECT_TRUE(values_valid) << "round " << round;
+        for (int uses : seen) EXPECT_EQ(uses, 1) << "round " << round;
+    }
+}
+
 } // namespace
