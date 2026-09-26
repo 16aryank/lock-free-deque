@@ -1,0 +1,28 @@
+{
+  "items": 3000000,
+  "trials_per_count": 10,
+  "reference": "/Users/aryankumar/Desktop/projects/lock-free-deque/build/benchmark_deque_reference",
+  "candidate": "/Users/aryankumar/Desktop/projects/lock-free-deque/build/benchmark_deque",
+  "medians": {
+    "0": {
+      "reference": 0.0151795,
+      "candidate": 0.015102500000000001
+    },
+    "1": {
+      "reference": 0.1268145,
+      "candidate": 0.095271
+    },
+    "2": {
+      "reference": 0.2078625,
+      "candidate": 0.103659
+    },
+    "4": {
+      "reference": 0.460191,
+      "candidate": 0.5253635
+    },
+    "8": {
+      "reference": 0.860018,
+      "candidate": 0.8841495
+    }
+  }
+}

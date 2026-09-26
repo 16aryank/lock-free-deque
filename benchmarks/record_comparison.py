@@ -57,6 +57,36 @@ def run(thieves):
     return stdout, results
 
 
+def write_summary(destination):
+    with (destination / "raw.csv").open(newline="") as csv_file:
+        rows = list(csv.DictReader(csv_file))
+
+    with (destination / "summary.csv").open("w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(("items", "thieves", "lock_free_median_seconds",
+                         "lock_free_average_seconds", "mutex_median_seconds",
+                         "mutex_average_seconds", "mutex_over_lock_free_time"))
+        for thieves in THIEF_COUNTS:
+            times = {
+                name: [float(row["seconds"]) for row in rows
+                       if int(row["thieves"]) == thieves and
+                       row["implementation"] == name and row["status"] == "PASS"]
+                for name in ("lock-free", "mutex")
+            }
+            if any(len(values) != TRIALS for values in times.values()):
+                raise RuntimeError(f"missing valid measured trials for {thieves} thieves")
+            lock_free = statistics.median(times["lock-free"])
+            mutex = statistics.median(times["mutex"])
+            writer.writerow((ITEMS, thieves, f"{lock_free:.6f}",
+                             f"{statistics.mean(times['lock-free']):.6f}",
+                             f"{mutex:.6f}",
+                             f"{statistics.mean(times['mutex']):.6f}",
+                             f"{mutex / lock_free:.3f}"))
+            print(f"thieves={thieves}: lock-free={lock_free:.6f}s "
+                  f"mutex={mutex:.6f}s mutex/lock-free={mutex / lock_free:.3f}x",
+                  flush=True)
+
+
 def main():
     if len(sys.argv) != 2:
         raise SystemExit("Usage: python3 benchmarks/record_comparison.py OUTPUT_DIRECTORY")
@@ -104,23 +134,7 @@ def main():
                          "mitems_per_second", "owner", "stolen", "status"))
         writer.writerows(rows)
 
-    with (destination / "summary.csv").open("w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(("items", "thieves", "lock_free_median_seconds",
-                         "mutex_median_seconds", "mutex_over_lock_free_time"))
-        for thieves in THIEF_COUNTS:
-            times = {
-                name: [float(row[4]) for row in rows
-                       if row[1] == thieves and row[3] == name]
-                for name in ("lock-free", "mutex")
-            }
-            lock_free = statistics.median(times["lock-free"])
-            mutex = statistics.median(times["mutex"])
-            ratio = mutex / lock_free
-            writer.writerow((ITEMS, thieves, f"{lock_free:.6f}", f"{mutex:.6f}",
-                             f"{ratio:.3f}"))
-            print(f"thieves={thieves}: lock-free={lock_free:.6f}s "
-                  f"mutex={mutex:.6f}s mutex/lock-free={ratio:.3f}x", flush=True)
+    write_summary(destination)
 
 
 if __name__ == "__main__":

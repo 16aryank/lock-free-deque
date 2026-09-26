@@ -62,11 +62,13 @@ public:
     ~BufferPool() {
         // External shutdown must join workers and return all buffers first.
         for (const auto& record : records_) {
-            assert(record->state.load(std::memory_order_seq_cst) == kAvailable);
+            assert(record->state.load(std::memory_order_relaxed) == kAvailable);
         }
     }
 
-    // One strong CAS per permanent record; a failed scan is a resource result.
+    // One strong CAS per permanent record. A successful claim acquires the
+    // previous owner's release so reset_for_reuse cannot race with that
+    // owner's metadata access. A failed scan inspects no record metadata.
     CircularArray<T>* try_acquire(std::size_t log_size) noexcept {
         if (log_size >= ranges_.size()) {
             return nullptr;
@@ -76,7 +78,8 @@ public:
             auto& record = *records_[i];
             std::uint32_t expected = kAvailable;
             if (record.state.compare_exchange_strong(
-                    expected, kOwned, std::memory_order_seq_cst)) {
+                    expected, kOwned, std::memory_order_acquire,
+                    std::memory_order_relaxed)) {
                 record.reset_for_reuse();
                 return &record;
             }
@@ -85,8 +88,14 @@ public:
     }
 
     // The caller owns buffer and must not access its mutable metadata afterward.
+    // In shrink, the SC top CAS (or its failed-path SC bottom restoration)
+    // precedes this release. A borrower's acquire claim precedes its SC slot
+    // writes. If a stale thief reads one of those writes, its SC slot read
+    // acquires that write before attempting the SC top CAS; the invalidation
+    // is therefore visible to that claim. This edge matters for reuse as
+    // well as for transfer of prev_ and low_water_mark_.
     void release(CircularArray<T>* buffer) noexcept {
-        static_cast<Record*>(buffer)->state.store(kAvailable, std::memory_order_seq_cst);
+        static_cast<Record*>(buffer)->state.store(kAvailable, std::memory_order_release);
     }
 
     static constexpr std::size_t max_log_size() noexcept {

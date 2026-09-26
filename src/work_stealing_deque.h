@@ -42,14 +42,14 @@ public:
         : pool_(pool),
           active_array_(pool.try_acquire(log_initial_size)),
           min_log_size_(log_initial_size) {
-        if (active_array_.load(std::memory_order_seq_cst) == nullptr) {
+        if (active_array_.load(std::memory_order_relaxed) == nullptr) {
             throw std::bad_alloc{};
         }
     }
 
     ~WorkStealingDeque() {
         // Workers must be stopped before the deque or its pool is destroyed.
-        release_chain(active_array_.load(std::memory_order_seq_cst));
+        release_chain(active_array_.load(std::memory_order_relaxed));
     }
 
     WorkStealingDeque(const WorkStealingDeque&) = delete;
@@ -61,8 +61,8 @@ public:
 #endif
 
     PushResult try_push_bottom(T x) {
-        std::int64_t b = bottom_.load(std::memory_order_seq_cst);
-        auto* a = active_array_.load(std::memory_order_seq_cst);
+        std::int64_t b = bottom_.load(std::memory_order_relaxed);
+        auto* a = active_array_.load(std::memory_order_relaxed);
         // Only the owner uses this lower bound on top_. A stale value can
         // overestimate occupancy, so refresh it before deciding to grow.
         if (b - cached_top_ >= a->size() - 1) {
@@ -119,8 +119,8 @@ public:
     }
 
     std::optional<T> pop_bottom() {
-        auto b = bottom_.load(std::memory_order_seq_cst) - 1;
-        auto* a = active_array_.load(std::memory_order_seq_cst);
+        auto b = bottom_.load(std::memory_order_relaxed) - 1;
+        auto* a = active_array_.load(std::memory_order_relaxed);
         bottom_.store(b, std::memory_order_seq_cst);
 
         // A cached lower bound cannot distinguish a remaining item from the
@@ -163,7 +163,7 @@ private:
     }
 
     void perhaps_shrink(std::int64_t b, std::int64_t t) {
-        auto* a = active_array_.load(std::memory_order_seq_cst);
+        auto* a = active_array_.load(std::memory_order_relaxed);
         auto* cursor = a;
         std::size_t num_shrink = 0;
 

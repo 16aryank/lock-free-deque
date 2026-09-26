@@ -7,7 +7,7 @@ TSAN_ARGS ?= 10000 4
 PROFILE_ARGS ?= 10000000 4
 PROFILE_OUTPUT ?= build/profile.json.gz
 HEADERS = src/work_stealing_deque.h src/circular_array.h src/atomic_utils.h src/buffer_pool.h src/steal_result.h src/mutex/work_stealing_deque.h
-TEST_SOURCES = test/test_deque.cpp test/test_buffer_pool.cpp test/test_reclamation.cpp test/test_allocation.cpp test/test_mutex_deque.cpp
+TEST_SOURCES = test/test_deque.cpp test/test_buffer_pool.cpp test/test_reclamation.cpp test/test_allocation.cpp test/test_mutex_deque.cpp test/test_ordering.cpp
 .PHONY: make clean benchmark benchmark-compare benchmark-tsan benchmark-profile test test-tsan
 
 make: build/test_deque
