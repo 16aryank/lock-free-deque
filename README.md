@@ -9,11 +9,12 @@ make test
 make test-tsan
 make benchmark
 make benchmark BENCH_ARGS="1000000 4"
+make benchmark BENCH_ARGS="1000000 4 backoff"
 make benchmark-compare BENCH_ARGS="1000000 4"
 make benchmark-tsan TSAN_ARGS="10000 4"
 ```
 
-GoogleTest is needed for unit tests. The benchmark has no GoogleTest dependency. The supplied Makefile uses Homebrew paths for GoogleTest; adjust `CXXFLAGS` and `LDFLAGS` for another installation. The benchmark accepts an item count and the number of thief threads. `make benchmark` measures the lock-free deque; `make benchmark-compare` runs the same workload once with each deque. Use `0` thieves to measure owner-only push and drain. For example:
+GoogleTest is needed for unit tests. The benchmark has no GoogleTest dependency. The supplied Makefile uses Homebrew paths for GoogleTest; adjust `CXXFLAGS` and `LDFLAGS` for another installation. The benchmark accepts an item count and the number of thief threads; add `backoff` as the third argument to use bounded steal retries. `make benchmark` measures the lock-free deque; `make benchmark-compare` runs the same workload once with each deque. Use `0` thieves to measure owner-only push and drain. For example:
 
 ```sh
 make benchmark BENCH_ARGS="1000000 8"
@@ -22,6 +23,8 @@ make benchmark-profile PROFILE_ARGS="10000000 4"
 ```
 
 `benchmark-profile` requires Samply. The owner pushes items while thieves steal; after they finish, the owner drains any remaining items. Pool construction and worker setup happen before timing. The benchmark provisions one record per size class for its single lock-free deque and checks that every item was consumed exactly once. Timings include worker completion and per-thread result recording. They are workload measurements, not individual operation latency.
+
+The measurements, comparison chart, and writeup are in [PERFORMANCE.md](PERFORMANCE.md).
 
 ## Configure and use
 
@@ -68,6 +71,11 @@ The pause hooks used by the schedule tests exist only when compiled with `DEQUE_
 
 `LockFreeAtomicValue<T>` requires trivial copy and move operations and an always-lock-free `std::atomic<T>`. The build also checks lock-free atomic indices, active pointers, and pool flags on the target. Owner-only loads of `bottom_` and `active_array_` use relaxed ordering; setup and shutdown checks also use relaxed loads. Pool claims use acquire on success and relaxed on failure, and returns use release. Deque publication, index arbitration, thief snapshots, and atomic slot operations remain sequentially consistent. Moving ownership to another thread requires an external happens-before handoff. Passing tests does not prove linearizability or progress.
 
-A [bounded GenMC model](model/README.md) checks a C11 translation with an owner, two thieves, and another deque borrowing a returned buffer. The SC reference and current stage 1 ordering each completed 4,146 executions without errors; coverage probes reached both shrink CAS outcomes and a stale thief read during buffer reuse. These finite checks do not prove correctness for all capacities or schedules.
+A [bounded GenMC model](model/README.md) checks the current Stage 1 ordering
+and worker-side steal retries with an owner, two thieves, and another deque
+borrowing a returned buffer. It explored 23,764 RC11 executions without errors.
+The model uses two raw attempts per batch and up to two batches per thief;
+production defaults to four attempts per batch. These finite checks do not
+prove correctness for all capacities or schedules.
 
 The unit suite includes deterministic pause schedules for stale thieves, buffer reuse, both shrink CAS outcomes, temporary empty states, and last-item races. It also checks size-class exhaustion, exact item values across growth and shrink, and allocation-free calls after setup. `make test-tsan` and `make benchmark-tsan` check for data races on exercised schedules. However, keep note that passing tests or ThreadSanitizer is not a proof of correctness for every possible schedule.
