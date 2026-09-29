@@ -5,13 +5,16 @@
 #include <cstdint>
 #include <stdexcept>
 #include <algorithm>
+#include <limits>
 
 #if defined(__x86_64__) || defined(__i386__)
 #include <immintrin.h>
 #endif
 
 struct StealBackoffConfig {
-    static constexpr std::uint32_t max_supported_window = std::numeric_limits<uint16_t>::max();
+    // The largest supported power-of-two pause window (2^16 units).
+    static constexpr std::uint32_t max_supported_window =
+        std::numeric_limits<std::uint16_t>::max() + 1u;
     unsigned max_attempts = 4;
     std::uint32_t initial_window = 4;
     std::uint32_t max_window = 256;
@@ -74,9 +77,9 @@ private:
         auto is_power_of_two = [](auto n) {
             return (n > 0) && ((n & (n - 1)) == 0);
         };
-        return config.max_attempts > 0 && config.max_attempts <= 64 // max attempts
-            && is_power_of_two(config.initial_window) && config.initial_window <= config.max_window // initial window
-            && is_power_of_two(config.max_window) && config.max_attempts <= StealBackoffConfig::max_supported_window; // maxwindow
+        return config.max_attempts > 0 && config.max_attempts <= 64
+            && is_power_of_two(config.initial_window) && config.initial_window <= config.max_window
+            && is_power_of_two(config.max_window) && config.max_window <= StealBackoffConfig::max_supported_window;
     }
 };
 
