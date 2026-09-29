@@ -1,0 +1,55 @@
+--- test/benchmark_deque.cpp
++++ diagnostic.cpp
+@@ -17,6 +17,10 @@
+ namespace {
+ using Value = std::size_t;
+ using Clock = std::chrono::steady_clock;
++
++struct alignas(128) AttemptCounts {
++    std::size_t success = 0, abort = 0, empty = 0;
++};
+ 
+ struct Result {
+     double seconds;
+@@ -53,6 +57,7 @@
+ // anything left at the bottom. Setup and validation are outside the timer.
+ template <class Deque>
+ Result run(Deque& deque, std::size_t items, unsigned thieves) {
++    std::vector<AttemptCounts> counts(thieves);
+     std::vector<std::vector<Value>> stolen(thieves);
+     for (auto& values : stolen) values.reserve(items / thieves + 1);
+     std::vector<Value> owner;
+@@ -67,10 +72,14 @@
+ 
+     for (unsigned t = 0; t < thieves; ++t) {
+         workers.emplace_back([&, t] {
++            AttemptCounts local;
+             ready.arrive_and_wait();
+             for (;;) {
+                 const bool finished = done.load(std::memory_order_acquire);
+                 const auto result = deque.steal();
++                if (result.state_ == StealState::SUCCESS) ++local.success;
++                else if (result.state_ == StealState::ABORT) ++local.abort;
++                else ++local.empty;
+                 if (result.state_ == StealState::SUCCESS) {
+                     stolen[t].push_back(*result.value_);
+                 } else if (result.state_ == StealState::EMPTY && finished) {
+@@ -79,6 +88,7 @@
+                     std::this_thread::yield();
+                 }
+             }
++            counts[t] = local;
+         });
+     }
+ 
+@@ -95,6 +105,10 @@
+     while (auto value = deque.pop_bottom()) owner.push_back(*value);
+     const double seconds = std::chrono::duration<double>(Clock::now() - start).count();
+ 
++    for (unsigned t = 0; t < thieves; ++t) {
++        std::cout << "attempts thread=" << t << " success=" << counts[t].success
++                  << " abort=" << counts[t].abort << " empty=" << counts[t].empty << "\n";
++    }
+     std::size_t stolen_count = 0;
+     for (const auto& values : stolen) stolen_count += values.size();
+     const bool valid = pushed_all && contains_each_value(owner, stolen, items);

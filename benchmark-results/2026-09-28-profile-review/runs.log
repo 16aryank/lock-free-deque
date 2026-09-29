@@ -1,0 +1,12 @@
+current-4
+items=10000000 thieves=4
+lock-free seconds=0.908951 owner=0 stolen=10000000 PASS
+current-8
+items=10000000 thieves=8
+lock-free seconds=1.913733 owner=0 stolen=10000000 PASS
+current-1
+items=10000000 thieves=1
+lock-free seconds=0.211861 owner=0 stolen=10000000 PASS
+current-4-repeat
+items=10000000 thieves=4
+lock-free seconds=0.831469 owner=0 stolen=10000000 PASS

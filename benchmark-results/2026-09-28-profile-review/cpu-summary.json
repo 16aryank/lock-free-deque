@@ -1,0 +1,1108 @@
+{
+  "current-1.json.gz": {
+    "owner": {
+      "cpu_delta_us": 84431,
+      "sample_count": 84,
+      "leaf_functions": [
+        {
+          "name": "WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)",
+          "cpu_delta_us": 41071,
+          "percent": 48.6444552356362
+        },
+        {
+          "name": "__bzero",
+          "cpu_delta_us": 20979,
+          "percent": 24.84750861650342
+        },
+        {
+          "name": "(anonymous namespace)::contains_each_value(std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > const&, std::__1::vector<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> >, std::__1::allocator<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > > > const&, unsigned long)",
+          "cpu_delta_us": 8879,
+          "percent": 10.516279565562412
+        },
+        {
+          "name": "main",
+          "cpu_delta_us": 7966,
+          "percent": 9.434923191718681
+        },
+        {
+          "name": "madvise",
+          "cpu_delta_us": 3766,
+          "percent": 4.460446992218498
+        },
+        {
+          "name": "__bsdthread_create",
+          "cpu_delta_us": 980,
+          "percent": 1.1607111132167096
+        },
+        {
+          "name": "__ulock_wait",
+          "cpu_delta_us": 790,
+          "percent": 0.9356752851440822
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x2fd0",
+          "cpu_delta_us": 20979,
+          "percent": 24.84750861650342
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3334",
+          "cpu_delta_us": 8644,
+          "percent": 10.237945778209426
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a8",
+          "cpu_delta_us": 7129,
+          "percent": 8.443581149104002
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3374",
+          "cpu_delta_us": 5921,
+          "percent": 7.01282704220014
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d24",
+          "cpu_delta_us": 3944,
+          "percent": 4.671270031149696
+        },
+        {
+          "library": "libsystem_kernel.dylib",
+          "rva": "0x3870",
+          "cpu_delta_us": 3766,
+          "percent": 4.460446992218498
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3328",
+          "cpu_delta_us": 3574,
+          "percent": 4.233042365955632
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xcd8",
+          "cpu_delta_us": 3493,
+          "percent": 4.137106039250986
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xce8",
+          "cpu_delta_us": 3486,
+          "percent": 4.128815245585153
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d60",
+          "cpu_delta_us": 2958,
+          "percent": 3.503452523362272
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x338c",
+          "cpu_delta_us": 2773,
+          "percent": 3.28433869076524
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3438",
+          "cpu_delta_us": 2334,
+          "percent": 2.764387488007959
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3344",
+          "cpu_delta_us": 2169,
+          "percent": 2.568961637313309
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3448",
+          "cpu_delta_us": 1982,
+          "percent": 2.347479006526039
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d30",
+          "cpu_delta_us": 1977,
+          "percent": 2.3415570110504436
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3330",
+          "cpu_delta_us": 1728,
+          "percent": 2.04664163636579
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3398",
+          "cpu_delta_us": 1344,
+          "percent": 1.5918323838400588
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x344c",
+          "cpu_delta_us": 1171,
+          "percent": 1.3869313403844559
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3388",
+          "cpu_delta_us": 1169,
+          "percent": 1.3845625421942178
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3390",
+          "cpu_delta_us": 1133,
+          "percent": 1.3419241747699304
+        }
+      ]
+    },
+    "thieves": {
+      "cpu_delta_us": 208420,
+      "sample_count": 211,
+      "leaf_functions": [
+        {
+          "name": "std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}> >(std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}>)",
+          "cpu_delta_us": 208420,
+          "percent": 100.0
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0x30dc",
+          "cpu_delta_us": 165155,
+          "percent": 79.24143556280588
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3100",
+          "cpu_delta_us": 22669,
+          "percent": 10.876595336340083
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3148",
+          "cpu_delta_us": 7844,
+          "percent": 3.7635543613856637
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3108",
+          "cpu_delta_us": 5893,
+          "percent": 2.827463775069571
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30fc",
+          "cpu_delta_us": 4900,
+          "percent": 2.351021974858459
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3138",
+          "cpu_delta_us": 980,
+          "percent": 0.47020439497169175
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3104",
+          "cpu_delta_us": 979,
+          "percent": 0.46972459456865945
+        }
+      ]
+    }
+  },
+  "current-4-repeat.json.gz": {
+    "owner": {
+      "cpu_delta_us": 517418,
+      "sample_count": 544,
+      "leaf_functions": [
+        {
+          "name": "main",
+          "cpu_delta_us": 312607,
+          "percent": 60.416723036307204
+        },
+        {
+          "name": "WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)",
+          "cpu_delta_us": 159523,
+          "percent": 30.83058571599751
+        },
+        {
+          "name": "__bzero",
+          "cpu_delta_us": 24400,
+          "percent": 4.715723071095323
+        },
+        {
+          "name": "(anonymous namespace)::contains_each_value(std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > const&, std::__1::vector<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> >, std::__1::allocator<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > > > const&, unsigned long)",
+          "cpu_delta_us": 12777,
+          "percent": 2.4693767901387274
+        },
+        {
+          "name": "madvise",
+          "cpu_delta_us": 8053,
+          "percent": 1.556381880800436
+        },
+        {
+          "name": "__ulock_wait",
+          "cpu_delta_us": 58,
+          "percent": 0.011209505660800359
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0xcd8",
+          "cpu_delta_us": 154180,
+          "percent": 29.797958323831022
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xce8",
+          "cpu_delta_us": 145871,
+          "percent": 28.19210000425188
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a4",
+          "cpu_delta_us": 23485,
+          "percent": 4.538883455929248
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x2fd0",
+          "cpu_delta_us": 23456,
+          "percent": 4.533278703098849
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3328",
+          "cpu_delta_us": 22136,
+          "percent": 4.278165815646151
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3334",
+          "cpu_delta_us": 18496,
+          "percent": 3.5746727017614384
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3374",
+          "cpu_delta_us": 17960,
+          "percent": 3.471081408068525
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3330",
+          "cpu_delta_us": 17482,
+          "percent": 3.3786996200364117
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xce4",
+          "cpu_delta_us": 11273,
+          "percent": 2.1787027123138354
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3344",
+          "cpu_delta_us": 10947,
+          "percent": 2.115697559806578
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3398",
+          "cpu_delta_us": 10331,
+          "percent": 1.996644878995319
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a8",
+          "cpu_delta_us": 10050,
+          "percent": 1.942336756742131
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3380",
+          "cpu_delta_us": 9211,
+          "percent": 1.7801854593384845
+        },
+        {
+          "library": "libsystem_kernel.dylib",
+          "rva": "0x3870",
+          "cpu_delta_us": 8053,
+          "percent": 1.556381880800436
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x338c",
+          "cpu_delta_us": 6199,
+          "percent": 1.1980642343327832
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33ac",
+          "cpu_delta_us": 5632,
+          "percent": 1.0884816531315107
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d24",
+          "cpu_delta_us": 4213,
+          "percent": 0.8142352991198606
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d38",
+          "cpu_delta_us": 3757,
+          "percent": 0.7261053925452922
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d60",
+          "cpu_delta_us": 2838,
+          "percent": 0.5484927080233003
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3388",
+          "cpu_delta_us": 2240,
+          "percent": 0.43291883931366903
+        }
+      ]
+    },
+    "thieves": {
+      "cpu_delta_us": 3002981,
+      "sample_count": 3216,
+      "leaf_functions": [
+        {
+          "name": "std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}> >(std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}>)",
+          "cpu_delta_us": 2998035,
+          "percent": 99.83529699322106
+        },
+        {
+          "name": "_platform_memmove",
+          "cpu_delta_us": 3824,
+          "percent": 0.12734013302115466
+        },
+        {
+          "name": "madvise",
+          "cpu_delta_us": 1122,
+          "percent": 0.03736287375777602
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0x3148",
+          "cpu_delta_us": 2026212,
+          "percent": 67.4733539772646
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3138",
+          "cpu_delta_us": 233388,
+          "percent": 7.771877344545303
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3100",
+          "cpu_delta_us": 143757,
+          "percent": 4.787143175398046
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3104",
+          "cpu_delta_us": 120444,
+          "percent": 4.010814587238481
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30f4",
+          "cpu_delta_us": 116399,
+          "percent": 3.87611510029534
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3114",
+          "cpu_delta_us": 106213,
+          "percent": 3.5369188150041575
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3144",
+          "cpu_delta_us": 85315,
+          "percent": 2.841010316082586
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30dc",
+          "cpu_delta_us": 50896,
+          "percent": 1.6948492181602215
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30e4",
+          "cpu_delta_us": 33335,
+          "percent": 1.1100636334362421
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3108",
+          "cpu_delta_us": 20042,
+          "percent": 0.6674034900653717
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3160",
+          "cpu_delta_us": 16667,
+          "percent": 0.5550151665961256
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3150",
+          "cpu_delta_us": 15530,
+          "percent": 0.5171527891784863
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30fc",
+          "cpu_delta_us": 10977,
+          "percent": 0.36553677828797454
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30ec",
+          "cpu_delta_us": 10594,
+          "percent": 0.3527827848394645
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30f0",
+          "cpu_delta_us": 3690,
+          "percent": 0.12287790032637569
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x3318",
+          "cpu_delta_us": 3078,
+          "percent": 0.1024981510039524
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3124",
+          "cpu_delta_us": 2016,
+          "percent": 0.06713329188562965
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x31ec",
+          "cpu_delta_us": 1679,
+          "percent": 0.05591110966070048
+        },
+        {
+          "library": "libsystem_kernel.dylib",
+          "rva": "0x3870",
+          "cpu_delta_us": 1122,
+          "percent": 0.03736287375777602
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x312c",
+          "cpu_delta_us": 881,
+          "percent": 0.02933751495597208
+        }
+      ]
+    }
+  },
+  "current-4.json.gz": {
+    "owner": {
+      "cpu_delta_us": 572871,
+      "sample_count": 576,
+      "leaf_functions": [
+        {
+          "name": "main",
+          "cpu_delta_us": 316281,
+          "percent": 55.209811632985435
+        },
+        {
+          "name": "WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)",
+          "cpu_delta_us": 208425,
+          "percent": 36.38253638253638
+        },
+        {
+          "name": "__bzero",
+          "cpu_delta_us": 33727,
+          "percent": 5.887363821872638
+        },
+        {
+          "name": "(anonymous namespace)::contains_each_value(std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > const&, std::__1::vector<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> >, std::__1::allocator<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > > > const&, unsigned long)",
+          "cpu_delta_us": 9837,
+          "percent": 1.717140508072498
+        },
+        {
+          "name": "madvise",
+          "cpu_delta_us": 4130,
+          "percent": 0.7209301919629375
+        },
+        {
+          "name": "__ulock_wait",
+          "cpu_delta_us": 451,
+          "percent": 0.07872627519982683
+        },
+        {
+          "name": "clock_gettime",
+          "cpu_delta_us": 20,
+          "percent": 0.0034911873702805694
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0xce8",
+          "cpu_delta_us": 152120,
+          "percent": 26.55397113835401
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xcd8",
+          "cpu_delta_us": 147593,
+          "percent": 25.763740877091003
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x2fd0",
+          "cpu_delta_us": 33512,
+          "percent": 5.849833557642122
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3374",
+          "cpu_delta_us": 32140,
+          "percent": 5.610338104040875
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3330",
+          "cpu_delta_us": 31344,
+          "percent": 5.471388846703708
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3334",
+          "cpu_delta_us": 19864,
+          "percent": 3.4674472961626615
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3328",
+          "cpu_delta_us": 19767,
+          "percent": 3.4505150374168005
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3344",
+          "cpu_delta_us": 17785,
+          "percent": 3.1045383690219963
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xce4",
+          "cpu_delta_us": 16568,
+          "percent": 2.8920996175404237
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3398",
+          "cpu_delta_us": 14411,
+          "percent": 2.515575059655664
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3380",
+          "cpu_delta_us": 13667,
+          "percent": 2.385702889481227
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a4",
+          "cpu_delta_us": 11574,
+          "percent": 2.0203501311813654
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x338c",
+          "cpu_delta_us": 9528,
+          "percent": 1.6632016632016633
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33ac",
+          "cpu_delta_us": 8831,
+          "percent": 1.5415337833473854
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x344c",
+          "cpu_delta_us": 8269,
+          "percent": 1.4434314182425014
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a8",
+          "cpu_delta_us": 4377,
+          "percent": 0.7640463559859025
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3388",
+          "cpu_delta_us": 4328,
+          "percent": 0.7554929469287152
+        },
+        {
+          "library": "libsystem_kernel.dylib",
+          "rva": "0x3870",
+          "cpu_delta_us": 4130,
+          "percent": 0.7209301919629375
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d30",
+          "cpu_delta_us": 3911,
+          "percent": 0.6827016902583654
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3448",
+          "cpu_delta_us": 3737,
+          "percent": 0.6523283601369244
+        }
+      ]
+    },
+    "thieves": {
+      "cpu_delta_us": 3453832,
+      "sample_count": 3528,
+      "leaf_functions": [
+        {
+          "name": "std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}> >(std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}>)",
+          "cpu_delta_us": 3449044,
+          "percent": 99.86137136953968
+        },
+        {
+          "name": "_platform_memmove",
+          "cpu_delta_us": 4788,
+          "percent": 0.1386286304603119
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0x3148",
+          "cpu_delta_us": 2433166,
+          "percent": 70.448302059857
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3138",
+          "cpu_delta_us": 332491,
+          "percent": 9.626727646278106
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30f4",
+          "cpu_delta_us": 165004,
+          "percent": 4.777418241535778
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3104",
+          "cpu_delta_us": 160667,
+          "percent": 4.651847571045725
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3100",
+          "cpu_delta_us": 94811,
+          "percent": 2.7450958819074
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3114",
+          "cpu_delta_us": 76928,
+          "percent": 2.2273231587407842
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30e4",
+          "cpu_delta_us": 60422,
+          "percent": 1.74941919583813
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3144",
+          "cpu_delta_us": 48839,
+          "percent": 1.4140525653824505
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30dc",
+          "cpu_delta_us": 30986,
+          "percent": 0.8971484426573151
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3160",
+          "cpu_delta_us": 15220,
+          "percent": 0.44066995731118364
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3108",
+          "cpu_delta_us": 6723,
+          "percent": 0.1946533589358139
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30fc",
+          "cpu_delta_us": 6459,
+          "percent": 0.18700967505078417
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3150",
+          "cpu_delta_us": 6434,
+          "percent": 0.18628584134955029
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x3318",
+          "cpu_delta_us": 4788,
+          "percent": 0.1386286304603119
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30ec",
+          "cpu_delta_us": 4643,
+          "percent": 0.13443039499315543
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3124",
+          "cpu_delta_us": 3513,
+          "percent": 0.10171311169738424
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30f0",
+          "cpu_delta_us": 2738,
+          "percent": 0.07927426695913409
+        }
+      ]
+    }
+  },
+  "current-8.json.gz": {
+    "owner": {
+      "cpu_delta_us": 904878,
+      "sample_count": 868,
+      "leaf_functions": [
+        {
+          "name": "main",
+          "cpu_delta_us": 557099,
+          "percent": 61.56620008443127
+        },
+        {
+          "name": "WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)",
+          "cpu_delta_us": 310097,
+          "percent": 34.269481631777985
+        },
+        {
+          "name": "__bzero",
+          "cpu_delta_us": 23558,
+          "percent": 2.603444884282743
+        },
+        {
+          "name": "(anonymous namespace)::contains_each_value(std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > const&, std::__1::vector<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> >, std::__1::allocator<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > > > const&, unsigned long)",
+          "cpu_delta_us": 9844,
+          "percent": 1.0878814602631515
+        },
+        {
+          "name": "madvise",
+          "cpu_delta_us": 3497,
+          "percent": 0.3864609372755222
+        },
+        {
+          "name": "__ulock_wait",
+          "cpu_delta_us": 783,
+          "percent": 0.08653100196932625
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0xcd8",
+          "cpu_delta_us": 282729,
+          "percent": 31.244985511859056
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xce8",
+          "cpu_delta_us": 251914,
+          "percent": 27.839554061431485
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3344",
+          "cpu_delta_us": 42200,
+          "percent": 4.663612111245936
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3328",
+          "cpu_delta_us": 36603,
+          "percent": 4.045075689761493
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3334",
+          "cpu_delta_us": 33885,
+          "percent": 3.7447037059139463
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3330",
+          "cpu_delta_us": 28653,
+          "percent": 3.1665042138277206
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x338c",
+          "cpu_delta_us": 25820,
+          "percent": 2.853423334416352
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3398",
+          "cpu_delta_us": 25439,
+          "percent": 2.811318210852734
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x2fd0",
+          "cpu_delta_us": 23558,
+          "percent": 2.603444884282743
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3380",
+          "cpu_delta_us": 22500,
+          "percent": 2.486523045095582
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3374",
+          "cpu_delta_us": 22381,
+          "percent": 2.4733721009904097
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a4",
+          "cpu_delta_us": 21522,
+          "percent": 2.3784421767354273
+        },
+        {
+          "library": "benchmark",
+          "rva": "0xce4",
+          "cpu_delta_us": 20300,
+          "percent": 2.2433963473529026
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33ac",
+          "cpu_delta_us": 13444,
+          "percent": 1.4857251474784445
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x33a8",
+          "cpu_delta_us": 12126,
+          "percent": 1.3400701531035124
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x344c",
+          "cpu_delta_us": 7272,
+          "percent": 0.8036442481748921
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3388",
+          "cpu_delta_us": 6445,
+          "percent": 0.7122507122507122
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3448",
+          "cpu_delta_us": 5885,
+          "percent": 0.6503639164616667
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x2d38",
+          "cpu_delta_us": 3938,
+          "percent": 0.4351967889593956
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3438",
+          "cpu_delta_us": 3633,
+          "percent": 0.4014905876814333
+        }
+      ]
+    },
+    "thieves": {
+      "cpu_delta_us": 14362236,
+      "sample_count": 13712,
+      "leaf_functions": [
+        {
+          "name": "std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}> >(std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::unique_ptr> >, (anonymous namespace)::run<WorkStealingDeque<unsigned long> >(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::{lambda()#2}>)",
+          "cpu_delta_us": 14354466,
+          "percent": 99.94589978886296
+        },
+        {
+          "name": "_platform_memmove",
+          "cpu_delta_us": 7770,
+          "percent": 0.05410021113704022
+        }
+      ],
+      "leaf_pcs": [
+        {
+          "library": "benchmark",
+          "rva": "0x3148",
+          "cpu_delta_us": 11287323,
+          "percent": 78.59029053693311
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3100",
+          "cpu_delta_us": 760580,
+          "percent": 5.295693511790225
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30f4",
+          "cpu_delta_us": 594211,
+          "percent": 4.137315387381185
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3138",
+          "cpu_delta_us": 426111,
+          "percent": 2.966884822112657
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3144",
+          "cpu_delta_us": 396246,
+          "percent": 2.758943663089786
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3114",
+          "cpu_delta_us": 261092,
+          "percent": 1.8179063482872722
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3104",
+          "cpu_delta_us": 257966,
+          "percent": 1.7961409351580073
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30e4",
+          "cpu_delta_us": 115611,
+          "percent": 0.8049651878718607
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30f0",
+          "cpu_delta_us": 106085,
+          "percent": 0.738638468271932
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3150",
+          "cpu_delta_us": 75237,
+          "percent": 0.5238529710833327
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30dc",
+          "cpu_delta_us": 23972,
+          "percent": 0.16690994354917996
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3108",
+          "cpu_delta_us": 21745,
+          "percent": 0.15140400143821617
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3160",
+          "cpu_delta_us": 9716,
+          "percent": 0.06764963338577643
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x3124",
+          "cpu_delta_us": 8190,
+          "percent": 0.05702454687417753
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x3318",
+          "cpu_delta_us": 6843,
+          "percent": 0.04764578440293002
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30e8",
+          "cpu_delta_us": 4532,
+          "percent": 0.031554975144538776
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30ec",
+          "cpu_delta_us": 2577,
+          "percent": 0.017942888558578205
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x30fc",
+          "cpu_delta_us": 2007,
+          "percent": 0.013974147201034714
+        },
+        {
+          "library": "benchmark",
+          "rva": "0x312c",
+          "cpu_delta_us": 1265,
+          "percent": 0.008807820732092134
+        },
+        {
+          "library": "libsystem_platform.dylib",
+          "rva": "0x3320",
+          "cpu_delta_us": 927,
+          "percent": 0.006454426734110204
+        }
+      ]
+    }
+  }
+}

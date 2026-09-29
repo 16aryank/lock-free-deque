@@ -1,0 +1,63 @@
+{
+  "date": "2026-09-28",
+  "commit": "152e741c3f0035ce72dd7f9b77e4738359de8789",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin",
+  "platform": "macOS-15.7.9-arm64-arm-64bit",
+  "samply": "0.13.1",
+  "rate_hz": 1000,
+  "profile_flags": "-Isrc -std=c++26 -I/opt/homebrew/include -O3 -g -DNDEBUG -fno-omit-frame-pointer",
+  "profile_build": "Compile to retained build/profile-20260928/benchmark.o, link with -pthread, then dsymutil. Same optimization flags as Makefile profiling target.",
+  "sha256": {
+    "src/work_stealing_deque.h": "fa113f08e5a1f88daca21d04a28306025d9b864a415fe15ca28a62115ad544ea",
+    "src/circular_array.h": "2238555b5183f205ce0532cd858f6e3032bdb8498f84f5f34a912cdff3635c1c",
+    "src/buffer_pool.h": "a7076cfcfeef445d28dc4ced643e0ec2ecb912f554803dc4482077726400b62a",
+    "test/benchmark_deque.cpp": "aedbe72f903fc706a654ca91310da53b4206d00146428d602f2d0c0c5f0aebf4",
+    "Makefile": "ad0fe8e9fc07b2c5e13c8e6ea9f1d86ecbea5c4114446a2461315e15e0c4375d",
+    "build/profile-20260928/benchmark": "0fd45a1a19bdceabf9138f21f670390175556840165b011fed3c7c156e084349",
+    "build/profile-20260928/benchmark.o": "b93562b3b9c72d359999b3e1510a7244de7f919bd17865179937955ffcabd144",
+    "build/profile-20260928/diagnostic": "afd6db3995f14529a6d2c4e53d38eb03b52e3717ab78558cddd1cc6250a3b84a",
+    "build/profile-20260928/diagnostic.cpp": "78117af9fa383a3c897d4b4a34bd371c9b28b79374df488788cc26790c6d489e"
+  },
+  "runs": [
+    {
+      "name": "current-4",
+      "thieves": 4,
+      "items": 10000000,
+      "seconds": 0.908951,
+      "owner": 0,
+      "stolen": 10000000,
+      "status": "PASS",
+      "command": "samply record --save-only --unstable-presymbolicate -o build/profile-20260928/current-4.json.gz -- ./build/profile-20260928/benchmark 10000000 4"
+    },
+    {
+      "name": "current-8",
+      "thieves": 8,
+      "items": 10000000,
+      "seconds": 1.913733,
+      "owner": 0,
+      "stolen": 10000000,
+      "status": "PASS",
+      "command": "samply record --save-only --unstable-presymbolicate -o build/profile-20260928/current-8.json.gz -- ./build/profile-20260928/benchmark 10000000 8"
+    },
+    {
+      "name": "current-1",
+      "thieves": 1,
+      "items": 10000000,
+      "seconds": 0.211861,
+      "owner": 0,
+      "stolen": 10000000,
+      "status": "PASS",
+      "command": "samply record --save-only --unstable-presymbolicate -o build/profile-20260928/current-1.json.gz -- ./build/profile-20260928/benchmark 10000000 1"
+    },
+    {
+      "name": "current-4-repeat",
+      "thieves": 4,
+      "items": 10000000,
+      "seconds": 0.831469,
+      "owner": 0,
+      "stolen": 10000000,
+      "status": "PASS",
+      "command": "samply record --save-only --unstable-presymbolicate -o build/profile-20260928/current-4-repeat.json.gz -- ./build/profile-20260928/benchmark 10000000 4"
+    }
+  ]
+}

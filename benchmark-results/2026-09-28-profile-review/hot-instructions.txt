@@ -1,0 +1,81 @@
+100000cd8:     	add	x0, sp, #0x200
+100000cdc:     	mov	x1, x22
+100000ce0:     	bl	0x100003328 <WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)>
+100000ce4:     	cbnz	w0, 0x100000d04 <_main+0x7cc>
+100000ce8:     	add	x22, x22, #0x1
+100000cec:     	cmp	x22, x19
+100000cf0:     	cset	w28, lo
+100000cf4:     	cmp	x19, x22
+100000cf8:     	b.ne	0x100000cd8 <_main+0x7a0>
+100000cfc:     	b	0x100000d04 <_main+0x7cc>
+100000d00:     	mov	w28, #0x0               ; =0
+1000030dc:     	str	x28, [x26], #0x8
+1000030e0:     	str	x26, [x20, #0x8]
+1000030e4:     	ldp	x8, x9, [x19, #0x18]
+1000030e8:     	ldaprb	w10, [x8]
+1000030ec:     	add	x8, x9, #0x100
+1000030f0:     	ldar	x8, [x8]
+1000030f4:     	add	x11, x9, #0x8
+1000030f8:     	ldar	x12, [x11]
+1000030fc:     	add	x13, x9, #0x80
+100003100:     	ldar	x13, [x13]
+100003104:     	ldar	x11, [x11]
+100003108:     	sub	x13, x13, x8
+10000310c:     	cmp	x13, #0x1
+100003110:     	b.lt	0x1000031d4 <void* std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct>>, (anonymous namespace)::Result (anonymous namespace)::run<WorkStealingDeque<unsigned long>>(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::'lambda0'()>>(void*)+0x148>
+100003114:     	ldr	x14, [x11]
+100003118:     	lsl	x14, x24, x14
+10000311c:     	bics	xzr, x13, x14
+100003120:     	b.eq	0x1000031c0 <void* std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct>>, (anonymous namespace)::Result (anonymous namespace)::run<WorkStealingDeque<unsigned long>>(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::'lambda0'()>>(void*)+0x134>
+100003124:     	mvn	x10, x14
+100003128:     	and	x10, x8, x10
+10000312c:     	ldr	x11, [x11, #0x8]
+100003130:     	add	x10, x11, x10, lsl #3
+100003134:     	ldar	x28, [x10]
+100003138:     	add	x10, x8, #0x1
+10000313c:     	add	x9, x9, #0x100
+100003140:     	mov	x11, x8
+100003144:     	casal	x11, x10, [x9]
+100003148:     	cmp	x11, x8
+10000314c:     	b.ne	0x1000030e4 <void* std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct>>, (anonymous namespace)::Result (anonymous namespace)::run<WorkStealingDeque<unsigned long>>(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::'lambda0'()>>(void*)+0x58>
+100003150:     	ldr	x8, [x19, #0x28]
+100003154:     	ldr	w9, [x19, #0x8]
+100003158:     	ldr	x8, [x8]
+10000315c:     	umaddl	x20, w9, w25, x8
+100003160:     	ldp	x26, x8, [x20, #0x8]
+100003164:     	cmp	x26, x8
+100003168:     	b.lo	0x1000030dc <void* std::__1::__thread_proxy[abi:ne190102]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct>>, (anonymous namespace)::Result (anonymous namespace)::run<WorkStealingDeque<unsigned long>>(WorkStealingDeque<unsigned long>&, unsigned long, unsigned int)::'lambda0'()>>(void*)+0x50>
+100003328:     	ldr	x9, [x0, #0x80]
+10000332c:     	ldr	x10, [x0, #0x8]
+100003330:     	ldr	x11, [x0, #0x180]
+100003334:     	ldr	x12, [x10]
+100003338:     	mov	x8, #-0x1               ; =-1
+10000333c:     	lsl	x12, x8, x12
+100003340:     	mvn	x13, x12
+100003344:     	sub	x11, x9, x11
+100003348:     	cmp	x11, x13
+10000334c:     	b.lo	0x100003374 <WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)+0x4c>
+100003350:     	add	x11, x0, #0x100
+100003354:     	ldar	x11, [x11]
+100003358:     	str	x11, [x0, #0x180]
+10000335c:     	ldr	x12, [x10]
+100003360:     	lsl	x8, x8, x12
+100003364:     	mvn	x13, x8
+100003368:     	sub	x8, x9, x11
+10000336c:     	cmp	x8, x13
+100003370:     	b.hs	0x1000033b0 <WorkStealingDeque<unsigned long>::try_push_bottom(unsigned long)+0x88>
+100003374:     	mov	x12, x10
+100003378:     	mov	w8, #0x0                ; =0
+10000337c:     	and	x10, x9, x13
+100003380:     	ldr	x11, [x12, #0x8]
+100003384:     	add	x10, x11, x10, lsl #3
+100003388:     	stlr	x1, [x10]
+10000338c:     	ldr	x10, [x12, #0x10]
+100003390:     	cmp	x10, x9
+100003394:     	csel	x10, x10, x9, lo
+100003398:     	str	x10, [x12, #0x10]
+10000339c:     	add	x9, x9, #0x1
+1000033a0:     	add	x10, x0, #0x80
+1000033a4:     	stlr	x9, [x10]
+1000033a8:     	mov	x0, x8
+1000033ac:     	ret

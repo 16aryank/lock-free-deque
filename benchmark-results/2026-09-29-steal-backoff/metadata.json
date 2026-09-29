@@ -1,0 +1,34 @@
+{
+  "recorded_utc": "2026-09-29T22:14:44.889795+00:00",
+  "git_commit": "152e741c3f0035ce72dd7f9b77e4738359de8789",
+  "git_status": "M Makefile\n M test/benchmark_deque.cpp\n?? BOUNDED_STEAL_RETRY_PLAN.md\n?? MEMORY_ORDERING_PLAN.md\n?? benchmark-results/2026-09-28-profile-review/\n?? benchmarks/compare_backoff.py\n?? src/steal_backoff.h\n?? test/test_steal_backoff.cpp",
+  "platform": "macOS-15.7.9-arm64-arm-64bit",
+  "logical_cpus": 10,
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "items": 3000000,
+  "thief_counts": [
+    0,
+    1,
+    2,
+    4,
+    8
+  ],
+  "warmups_per_variant_per_count": 2,
+  "measured_pairs_per_count": 10,
+  "order": "previous then backoff on odd trials; reversed on even trials",
+  "previous": "/Users/aryankumar/Desktop/projects/lock-free-deque/build/benchmark_previous",
+  "backoff": "/Users/aryankumar/Desktop/projects/lock-free-deque/build/benchmark_deque",
+  "backoff_mode": "backoff (default configuration: 4 attempts, window 4..256)",
+  "mutex_source": "benchmark-results/weaker-orders-stage-1/summary.csv",
+  "mutex_measurement": "saved median only; mutex binary was not run",
+  "sha256": {
+    "previous_binary": "5067c98c52f913afdc298a3b1742bb67f222639fd9bce1bf0f26031b2bbc5ea5",
+    "backoff_binary": "d6d2713886ec12dd12ec52dc24301b0a1c31beaf1ecc80501b398b43a3f018b1",
+    "previous_source": "aedbe72f903fc706a654ca91310da53b4206d00146428d602f2d0c0c5f0aebf4",
+    "backoff_source": "861ea1263321e7c3fbd368b135430a9955940eedadc52cbd9efaa06689afce45",
+    "backoff_header": "24610bc7cf50200a194a87d272e4715ae9acf873dbae3103376c0b189bceb89a",
+    "deque_header": "fa113f08e5a1f88daca21d04a28306025d9b864a415fe15ca28a62115ad544ea",
+    "mutex_summary": "399bda6c0dd7a7516a6c1c7f302a55198c8ea18e8ae80f190a96857251272743",
+    "collector": "e58956f47f761e009d3e0ac874f547d233b25c09853436f7fc131d15441adb1e"
+  }
+}

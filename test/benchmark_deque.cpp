@@ -1,5 +1,6 @@
 #include "work_stealing_deque.h"
 #include "mutex/work_stealing_deque.h"
+#include "steal_backoff.h"
 
 #include <algorithm>
 #include <atomic>
@@ -23,6 +24,14 @@ struct Result {
     std::size_t owner;
     std::size_t stolen;
     bool valid;
+    struct WorkerStats {
+        std::size_t attempts = 0;
+        std::size_t successes = 0;
+        std::size_t aborts = 0;
+        std::size_t empties = 0;
+        std::size_t max_consecutive_aborts = 0;
+    };
+    std::vector<WorkerStats> workers;
 };
 
 bool push(WorkStealingDeque<Value>& deque, Value value) {
@@ -51,14 +60,16 @@ bool contains_each_value(const std::vector<Value>& owner,
 
 // The owner pushes while thieves steal. After they finish, the owner drains
 // anything left at the bottom. Setup and validation are outside the timer.
-template <class Deque>
-Result run(Deque& deque, std::size_t items, unsigned thieves) {
+template <bool Backoff = false, bool Diagnostic = false, class Deque>
+Result run(Deque& deque, std::size_t items, unsigned thieves,
+           StealBackoffConfig config = {}) {
     std::vector<std::vector<Value>> stolen(thieves);
     for (auto& values : stolen) values.reserve(items / thieves + 1);
     std::vector<Value> owner;
     owner.reserve(items);
     std::vector<std::thread> workers;
     workers.reserve(thieves);
+    std::vector<Result::WorkerStats> worker_stats(thieves);
     std::atomic<bool> done{false};
     Clock::time_point start;
     std::barrier ready(static_cast<std::ptrdiff_t>(thieves + 1), [&]() noexcept {
@@ -67,10 +78,42 @@ Result run(Deque& deque, std::size_t items, unsigned thieves) {
 
     for (unsigned t = 0; t < thieves; ++t) {
         workers.emplace_back([&, t] {
+            // Each worker owns one context. Distinct, nonzero seeds avoid
+            // synchronizing jitter across workers.
+            StealBackoff backoff{0x9e3779b9u * (t + 1), config};
+            Result::WorkerStats local_stats;
+            std::size_t consecutive_aborts = 0;
+            auto observe = [&](StealState state) {
+                if constexpr (Diagnostic) {
+                    ++local_stats.attempts;
+                    if (state == StealState::ABORT) {
+                        ++local_stats.aborts;
+                        local_stats.max_consecutive_aborts =
+                            std::max(local_stats.max_consecutive_aborts,
+                                     ++consecutive_aborts);
+                    } else {
+                        consecutive_aborts = 0;
+                        if (state == StealState::SUCCESS) ++local_stats.successes;
+                        if (state == StealState::EMPTY) ++local_stats.empties;
+                    }
+                }
+            };
             ready.arrive_and_wait();
             for (;;) {
                 const bool finished = done.load(std::memory_order_acquire);
-                const auto result = deque.steal();
+                const auto result = [&] {
+                    if constexpr (Backoff) {
+                        if constexpr (Diagnostic) {
+                            return steal_with_retry(
+                                deque, backoff, CpuPause{},
+                                [&] { return backoff.next_random(); }, observe);
+                        } else {
+                            return steal_with_retry(deque, backoff);
+                        }
+                    } else {
+                        return deque.steal();
+                    }
+                }();
                 if (result.state_ == StealState::SUCCESS) {
                     stolen[t].push_back(*result.value_);
                 } else if (result.state_ == StealState::EMPTY && finished) {
@@ -79,6 +122,7 @@ Result run(Deque& deque, std::size_t items, unsigned thieves) {
                     std::this_thread::yield();
                 }
             }
+            if constexpr (Diagnostic) worker_stats[t] = local_stats;
         });
     }
 
@@ -98,7 +142,7 @@ Result run(Deque& deque, std::size_t items, unsigned thieves) {
     std::size_t stolen_count = 0;
     for (const auto& values : stolen) stolen_count += values.size();
     const bool valid = pushed_all && contains_each_value(owner, stolen, items);
-    return {seconds, owner.size(), stolen_count, valid};
+    return {seconds, owner.size(), stolen_count, valid, std::move(worker_stats)};
 }
 
 std::unique_ptr<BufferPool<Value>> make_pool(std::size_t items) {
@@ -117,11 +161,40 @@ void print_result(std::string_view name, const Result& result, std::size_t items
               << " owner=" << result.owner << " stolen=" << result.stolen
               << ' ' << (result.valid ? "PASS" : "FAIL") << '\n';
 }
+
+void print_diagnostics(const Result& result) {
+    Result::WorkerStats total;
+    for (const auto& worker : result.workers) {
+        total.attempts += worker.attempts;
+        total.successes += worker.successes;
+        total.aborts += worker.aborts;
+        total.empties += worker.empties;
+        total.max_consecutive_aborts =
+            std::max(total.max_consecutive_aborts, worker.max_consecutive_aborts);
+    }
+    std::cout << "raw_attempts=" << total.attempts
+              << " successes=" << total.successes
+              << " aborts=" << total.aborts
+              << " empties=" << total.empties
+              << " max_consecutive_aborts=" << total.max_consecutive_aborts
+              << " work_per_thief=";
+    for (std::size_t t = 0; t < result.workers.size(); ++t) {
+        if (t != 0) std::cout << ',';
+        std::cout << result.workers[t].successes;
+    }
+    std::cout << '\n';
+}
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc > 4 || (argc == 4 && std::string_view(argv[3]) != "compare")) {
-        std::cerr << "Usage: " << argv[0] << " [items] [thieves] [compare]\n";
+    const auto mode = argc > 3 ? std::string_view(argv[3]) : std::string_view{};
+    const bool use_backoff = mode == "backoff" || mode == "backoff-diagnostic";
+    if ((mode.empty() && argc > 3) ||
+        (mode != "" && mode != "compare" && !use_backoff) ||
+        (use_backoff ? argc > 7 : argc > 4)) {
+        std::cerr << "Usage: " << argv[0]
+                  << " [items] [thieves] [compare|backoff|backoff-diagnostic]"
+                     " [attempts [initial_window [max_window]]]\n";
         return EXIT_FAILURE;
     }
 
@@ -132,13 +205,26 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
     const unsigned thieves = static_cast<unsigned>(thief_count);
+    StealBackoffConfig config;
+    if (use_backoff) {
+        if (argc > 4) config.max_attempts = static_cast<unsigned>(std::stoul(argv[4]));
+        if (argc > 5) config.initial_window = static_cast<std::uint32_t>(std::stoul(argv[5]));
+        if (argc > 6) config.max_window = static_cast<std::uint32_t>(std::stoul(argv[6]));
+        // Check configuration before creating threads.
+        StealBackoff validation{1, config};
+    }
 
     std::cout << "items=" << items << " thieves=" << thieves << '\n';
     auto pool = make_pool(items);
     WorkStealingDeque<Value> deque(*pool, 4);
-    const Result lock_free = run(deque, items, thieves);
+    const Result lock_free = mode == "backoff"
+        ? run<true>(deque, items, thieves, config)
+        : mode == "backoff-diagnostic"
+            ? run<true, true>(deque, items, thieves, config)
+            : run(deque, items, thieves);
     print_result("lock-free", lock_free, items);
-    if (argc < 4) return lock_free.valid ? EXIT_SUCCESS : EXIT_FAILURE;
+    if (mode == "backoff-diagnostic") print_diagnostics(lock_free);
+    if (mode != "compare") return lock_free.valid ? EXIT_SUCCESS : EXIT_FAILURE;
 
     mutex_deque::WorkStealingDeque<Value> mutex_deque(4);
     const Result mutex = run(mutex_deque, items, thieves);

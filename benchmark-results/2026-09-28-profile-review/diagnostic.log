@@ -1,0 +1,74 @@
+thieves=1 trial=1
+items=3000000 thieves=1
+attempts thread=0 success=3000000 abort=0 empty=1
+lock-free seconds=0.065782 Mitems/s=45.61 owner=0 stolen=3000000 PASS
+
+thieves=1 trial=2
+items=3000000 thieves=1
+attempts thread=0 success=3000000 abort=0 empty=1
+lock-free seconds=0.068332 Mitems/s=43.90 owner=0 stolen=3000000 PASS
+
+thieves=1 trial=3
+items=3000000 thieves=1
+attempts thread=0 success=3000000 abort=0 empty=2
+lock-free seconds=0.069961 Mitems/s=42.88 owner=0 stolen=3000000 PASS
+
+thieves=4 trial=1
+items=3000000 thieves=4
+attempts thread=0 success=867602 abort=1730652 empty=1
+attempts thread=1 success=616461 abort=1709011 empty=1
+attempts thread=2 success=596292 abort=1728581 empty=2
+attempts thread=3 success=919645 abort=1637776 empty=1
+lock-free seconds=0.291197 Mitems/s=10.30 owner=0 stolen=3000000 PASS
+
+thieves=4 trial=2
+items=3000000 thieves=4
+attempts thread=0 success=756314 abort=2055954 empty=1
+attempts thread=1 success=764809 abort=2052568 empty=1
+attempts thread=2 success=726043 abort=2089813 empty=1
+attempts thread=3 success=752834 abort=2063366 empty=1
+lock-free seconds=0.344565 Mitems/s=8.71 owner=0 stolen=3000000 PASS
+
+thieves=4 trial=3
+items=3000000 thieves=4
+attempts thread=0 success=941772 abort=1584290 empty=1
+attempts thread=1 success=537238 abort=1621779 empty=1
+attempts thread=2 success=550025 abort=1611360 empty=2
+attempts thread=3 success=970965 abort=1513942 empty=1
+lock-free seconds=0.271246 Mitems/s=11.06 owner=0 stolen=3000000 PASS
+
+thieves=8 trial=1
+items=3000000 thieves=8
+attempts thread=0 success=489820 abort=1313611 empty=1
+attempts thread=1 success=280263 abort=1245971 empty=1
+attempts thread=2 success=409494 abort=1349957 empty=1
+attempts thread=3 success=361161 abort=1338061 empty=1
+attempts thread=4 success=295313 abort=1312953 empty=1
+attempts thread=5 success=380874 abort=1225768 empty=1
+attempts thread=6 success=456435 abort=1235806 empty=1
+attempts thread=7 success=326640 abort=1300979 empty=2
+lock-free seconds=0.467581 Mitems/s=6.42 owner=0 stolen=3000000 PASS
+
+thieves=8 trial=2
+items=3000000 thieves=8
+attempts thread=0 success=472878 abort=1698413 empty=1
+attempts thread=1 success=394208 abort=1797659 empty=1
+attempts thread=2 success=325911 abort=1802573 empty=1
+attempts thread=3 success=310077 abort=1849572 empty=1
+attempts thread=4 success=322492 abort=1809428 empty=1
+attempts thread=5 success=339326 abort=1750370 empty=1
+attempts thread=6 success=389856 abort=1762057 empty=1
+attempts thread=7 success=445252 abort=1717510 empty=2
+lock-free seconds=0.620281 Mitems/s=4.84 owner=0 stolen=3000000 PASS
+
+thieves=8 trial=3
+items=3000000 thieves=8
+attempts thread=0 success=522463 abort=1828014 empty=2
+attempts thread=1 success=357935 abort=1784276 empty=2
+attempts thread=2 success=329237 abort=1789154 empty=2
+attempts thread=3 success=351975 abort=1783684 empty=2
+attempts thread=4 success=340498 abort=1851225 empty=3
+attempts thread=5 success=352163 abort=1744495 empty=2
+attempts thread=6 success=350021 abort=1743612 empty=3
+attempts thread=7 success=395708 abort=1721408 empty=6
+lock-free seconds=0.642824 Mitems/s=4.67 owner=0 stolen=3000000 PASS
