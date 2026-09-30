@@ -22,6 +22,21 @@ lock-free variants are close together; the mutex deque takes roughly twice as
 long. The small differences among the lock-free variants at zero thieves
 should not be read as a meaningful ranking.
 
+## Final version versus mutex
+
+The line graph compares the newest backoff variant with the mutex deque.
+Its points use the same saved medians as the table above.
+
+![Line graph of median runtime for steal backoff and the mutex deque across measured thief counts](benchmark-results/final-vs-mutex.svg)
+
+At two, four, and eight thieves, the final version took 87.0%, 78.4%, and
+39.7% less time than the saved mutex medians. At one thief it took 29.6% more
+time. With no thieves it took 56.6% less time, though that owner-only workload
+does not exercise stealing or backoff. The mutex measurements are historical
+and were not paired with the final backoff runs. The connecting lines guide
+the eye between the five measured thief counts; they do not represent
+additional measurements.
+
 ## How the implementation evolved
 
 **Sequential consistency established the baseline.** The original lock-free
@@ -74,7 +89,7 @@ The backoff tests and ThreadSanitizer checks passed. A separate
 Stage 1 ordering with steal retries without errors. Its smaller retry bound
 checks safety schedules, not the runtime or fairness of the pause policy.
 
-## Measurement and comparison limits
+## Measurement method and sources
 
 The benchmark has one owner pushing items while thieves steal. After the
 thieves join, the owner drains any remainder. Worker setup and exact-once
@@ -90,16 +105,36 @@ reports ten measured trials per thief count, excluding warm-ups:
 | Cache layout | [P1 cache-layout candidate](benchmark-results/2026-09-26-cache-layout-p1/summary.csv), `candidate_median_seconds` |
 | Steal backoff | [Backoff candidate](benchmark-results/2026-09-29-steal-backoff/summary.csv), `candidate_median_seconds` |
 
-The four chart columns come from separate recording sessions. In particular,
-the mutex implementation was not rebenchmarked for the backoff experiment.
-The four-way chart shows the saved results at a common workload, but small
-cross-session gaps are not controlled speedups. The paired cache-layout and
-backoff experiments support conclusions about those individual changes more
-directly. These results do not measure latency, energy use, fairness, other
-architectures, many-deque schedulers, or concurrent owner pops.
+## Benchmark limitations
 
-The chart is also available as a [PNG](benchmark-results/implementation-comparison.png).
-Regenerate both files from the saved CSVs with
+- **The four-way and two-line charts combine recording sessions.** The mutex
+  implementation was not rebenchmarked alongside backoff. Even on the same
+  machine, scheduling and background load can change between sessions. The
+  paired cache-layout and backoff experiments support claims about those
+  individual changes more directly; small cross-session gaps do not.
+- **The workload uses one deque and one owner.** The owner pushes while
+  thieves steal, then drains after they have joined. It does not measure
+  concurrent owner pops, a scheduler with many deques or changing victims,
+  or repeated shrink and buffer reuse under concurrent steals.
+- **The timer measures the whole workload.** It includes worker completion
+  and storing stolen values into per-thread vectors, so these medians are not
+  isolated `steal()` latencies. The one-thief profile found result recording
+  prominent in sampled CPU time. Worker setup and exact-once validation are
+  excluded from the timer.
+- **The evidence is specific to this machine and run size.** The measurements
+  cover 3,000,000 items and 0, 1, 2, 4, or 8 thieves on one Apple ARM64 host.
+  Ten-trial medians hide some run-to-run spread; the source `raw.csv` files
+  and per-experiment reports show individual timings and ranges. The charts
+  do not establish performance on x86-64 or for other queue occupancies.
+- **Throughput is only one outcome.** These runs do not measure per-task
+  latency, fairness across thieves, energy use, or the pause policy's CPU
+  cost in a complete scheduler. Profiling samples and instrumented `ABORT`
+  counts helped select an experiment, but they are not direct measurements
+  of CAS latency or the uninstrumented policy's speedup.
+
+The [bar chart PNG](benchmark-results/implementation-comparison.png) and
+[line graph PNG](benchmark-results/final-vs-mutex.png) are also available.
+Regenerate all four chart files from the saved CSVs with
 [`benchmarks/plot_implementation_comparison.py`](benchmarks/plot_implementation_comparison.py):
 
 ```sh
